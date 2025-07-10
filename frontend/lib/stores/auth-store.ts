@@ -1,25 +1,31 @@
-"use client"
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { authApi } from "@/lib/api/auth";
 
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
-import { authApi } from "../api"
+export type UserRole =
+  | "Admin"
+  | "Scrum Master"
+  | "Product Owner"
+  | "Developer"
+  | "Designer";
 
-interface User {
-  id: string
-  name: string
-  email: string
-  role: string
-  avatar?: string
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  avatar?: string;
 }
 
 interface AuthState {
-  user: User | null
-  token: string | null
-  isAuthenticated: boolean
-  login: (email: string, password: string) => Promise<boolean>
-  register: (name: string, email: string, password: string, role: string) => Promise<boolean>
-  logout: () => void
-  checkAuth: () => Promise<void>
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isAuthChecked: boolean;
+  login: (user: User, token: string) => void;
+  logout: () => void;
+  updateUser: (user: Partial<User>) => void;
+  checkAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -28,91 +34,54 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isAuthenticated: false,
+      isAuthChecked: false,
 
-      login: async (email: string, password: string) => {
-        try {
-          const response = await authApi.login(email, password)
-          const { user, token } = response.data
-
-          localStorage.setItem("auth_token", token)
-
-          set({
-            user,
-            token,
-            isAuthenticated: true,
-          })
-
-          return true
-        } catch (error) {
-          console.error("Login failed:", error)
-          return false
-        }
+      login: (user, token) => {
+        set({ user, token, isAuthenticated: true });
       },
 
-      register: async (name: string, email: string, password: string, role: string) => {
-        try {
-          const response = await authApi.register(name, email, password, role)
-          const { user, token } = response.data
-
-          localStorage.setItem("auth_token", token)
-
-          set({
-            user,
-            token,
-            isAuthenticated: true,
-          })
-
-          return true
-        } catch (error) {
-          console.error("Registration failed:", error)
-          return false
-        }
+      logout: () => {
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          isAuthChecked: true,
+        });
       },
 
-      logout: async () => {
-        try {
-          await authApi.logout()
-        } catch (error) {
-          console.error("Logout error:", error)
-        } finally {
-          localStorage.removeItem("auth_token")
-          localStorage.removeItem("user")
-
-          set({
-            user: null,
-            token: null,
-            isAuthenticated: false,
-          })
+      updateUser: (userData) => {
+        const currentUser = get().user;
+        if (currentUser) {
+          set({ user: { ...currentUser, ...userData } });
         }
       },
 
       checkAuth: async () => {
-        const token = localStorage.getItem("auth_token")
+        const token = get().token;
+        console.log("🧪 Checking token:", token);
+
         if (!token) {
-          set({ isAuthenticated: false, user: null, token: null })
-          return
+          set({ isAuthChecked: true });
+          return;
         }
 
         try {
-          const response = await authApi.me()
+          const user = await authApi.me();
+          set({ user, isAuthenticated: true, isAuthChecked: true });
+          console.log("✅ Token valid. Logged in as:", user.name);
+        } catch (err) {
+          console.error("❌ Token invalid or expired");
           set({
-            user: response.data,
-            token,
-            isAuthenticated: true,
-          })
-        } catch (error) {
-          localStorage.removeItem("auth_token")
-          set({ isAuthenticated: false, user: null, token: null })
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isAuthChecked: true,
+          });
         }
       },
     }),
     {
-      name: "auth-storage",
-      partialize: (state) => ({
-        user: state.user,
-        token: state.token,
-        isAuthenticated: state.isAuthenticated,
-      }),
-    },
-  ),
-)
+      name: "auth-storage", // key in localStorage
+    }
+  )
+);
