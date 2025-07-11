@@ -1,44 +1,73 @@
-import { create } from "zustand"
+import { create } from "zustand";
+import api from "@/lib/axios";
 
-export type ProjectStatus = "Active" | "Completed" | "On Hold"
+export type ProjectStatus = "active" | "completed" | "on_hold";
+export type ProjectDifficulty = "Easy" | "Medium" | "Hard" | "Extreme";
 
 export interface Project {
-  id: string
-  name: string
-  description: string
-  status: ProjectStatus
-  createdAt: string
-  updatedAt: string
-  teamMembers: string[]
-  sprintCount: number
+  id: string;
+  name: string;
+  description: string;
+  status: ProjectStatus;
+  difficulty?: ProjectDifficulty;
+  start_date?: string;
+  end_date?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  sprintCount?: number;
+  teamMembers: string[]; // array of member names or objects if you want
 }
 
 interface ProjectState {
-  projects: Project[]
-  currentProject: Project | null
-  setProjects: (projects: Project[]) => void
-  setCurrentProject: (project: Project | null) => void
-  addProject: (project: Project) => void
-  updateProject: (id: string, updates: Partial<Project>) => void
-  deleteProject: (id: string) => void
+  projects: Project[];
+  addProject: (project: Project) => void;
+  updateProject: (id: string, updated: Partial<Project>) => void;
+  deleteProject: (id: string) => void;
+  fetchProjects: () => Promise<void>;
 }
 
-export const useProjectStore = create<ProjectState>((set, get) => ({
+export const useProjectStore = create<ProjectState>((set) => ({
   projects: [],
-  currentProject: null,
-  setProjects: (projects) => set({ projects }),
-  setCurrentProject: (project) => set({ currentProject: project }),
-  addProject: (project) => {
-    set({ projects: [...get().projects, project] })
+
+  addProject: (project) =>
+    set((state) => ({
+      projects: [...state.projects, project],
+    })),
+
+  updateProject: (id, updated) =>
+    set((state) => ({
+      projects: state.projects.map((p) =>
+        p.id === id ? { ...p, ...updated } : p
+      ),
+    })),
+
+  deleteProject: (id) =>
+    set((state) => ({
+      projects: state.projects.filter((p) => p.id !== id),
+    })),
+
+  fetchProjects: async () => {
+    try {
+      const response = await api.get("/projects");
+      const projects = response.data.map((p: any) => ({
+        id: p.id.toString(),
+        name: p.name,
+        description: p.description,
+        status: p.status === "on_hold" ? "on_hold" : capitalize(p.status),
+        difficulty: p.difficulty ?? "Medium",
+        createdAt: p.created_at,
+        updatedAt: p.updated_at,
+        sprintCount: p.sprints?.length ?? 0,
+        teamMembers: p.members?.map((m: any) => m.name) ?? [],
+      }));
+
+      set({ projects });
+    } catch (err) {
+      console.error("❌ Failed to fetch projects", err);
+    }
   },
-  updateProject: (id, updates) => {
-    set({
-      projects: get().projects.map((p) => (p.id === id ? { ...p, ...updates } : p)),
-    })
-  },
-  deleteProject: (id) => {
-    set({
-      projects: get().projects.filter((p) => p.id !== id),
-    })
-  },
-}))
+}));
+
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

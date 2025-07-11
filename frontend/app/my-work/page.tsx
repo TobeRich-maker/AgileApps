@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/lib/stores/auth-store";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +32,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types/api";
-// === Mocked Data ===
+
+// Mock data for user's tasks
 const mockUserTasks: Task[] = [
   {
     id: "1",
@@ -101,65 +100,51 @@ const mockUserTasks: Task[] = [
   },
 ];
 
-// === Types ===
 type SortOption = "dueDate" | "priority" | "status" | "storyPoints";
 type FilterOption = "all" | "todo" | "inprogress" | "done";
 
 export default function MyWorkPage() {
-  const router = useRouter();
-  const { isAuthenticated, checkAuth } = useAuthStore();
-
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [tasks, setTasks] = useState<Task[]>(mockUserTasks);
   const [pinnedTasks, setPinnedTasks] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("dueDate");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
 
-  // === Authentication Check ===
+  // Load pinned tasks from localStorage
   useEffect(() => {
-    checkAuth().finally(() => setIsAuthChecked(true));
-  }, [checkAuth]);
-
-  useEffect(() => {
-    if (isAuthChecked && !isAuthenticated) {
-      router.push("/auth/login");
-    }
-  }, [isAuthChecked, isAuthenticated, router]);
-  //End Authentication Check
-
-  // === Load Pinned from localStorage ===
-  useEffect(() => {
-    if (!isAuthChecked) return;
     const saved = localStorage.getItem("pinnedTasks");
-    if (saved) setPinnedTasks(JSON.parse(saved));
-  }, [isAuthChecked]);
+    if (saved) {
+      setPinnedTasks(JSON.parse(saved));
+    }
+  }, []);
 
+  // Save pinned tasks to localStorage
   const togglePin = (taskId: string) => {
-    const updated = pinnedTasks.includes(taskId)
+    const newPinned = pinnedTasks.includes(taskId)
       ? pinnedTasks.filter((id) => id !== taskId)
       : [...pinnedTasks, taskId];
 
-    setPinnedTasks(updated);
-    localStorage.setItem("pinnedTasks", JSON.stringify(updated));
+    setPinnedTasks(newPinned);
+    localStorage.setItem("pinnedTasks", JSON.stringify(newPinned));
   };
 
-  // === Filter & Sort Tasks ===
+  // Filter and sort tasks
   const filteredAndSortedTasks = useMemo(() => {
-    if (!isAuthChecked) return [];
-
     const filtered = tasks.filter((task) => {
       const matchesSearch =
         task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         task.description.toLowerCase().includes(searchQuery.toLowerCase());
+
       const matchesFilter =
         filterBy === "all" ||
         (filterBy === "todo" && task.status === "To Do") ||
         (filterBy === "inprogress" && task.status === "In Progress") ||
         (filterBy === "done" && task.status === "Done");
+
       return matchesSearch && matchesFilter;
     });
 
+    // Sort tasks
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "dueDate":
@@ -168,16 +153,16 @@ export default function MyWorkPage() {
             new Date(b.dueDate || "").getTime()
           );
         case "priority":
-          const priorityMap = { Critical: 4, High: 3, Medium: 2, Low: 1 };
+          const priorityOrder = { Critical: 4, High: 3, Medium: 2, Low: 1 };
           return (
-            (priorityMap[b.priority as keyof typeof priorityMap] ?? 0) -
-            (priorityMap[a.priority as keyof typeof priorityMap] ?? 0)
+            (priorityOrder[b.priority as keyof typeof priorityOrder] || 0) -
+            (priorityOrder[a.priority as keyof typeof priorityOrder] || 0)
           );
         case "status":
-          const statusMap = { "To Do": 1, "In Progress": 2, Done: 3 };
+          const statusOrder = { "To Do": 1, "In Progress": 2, Done: 3 };
           return (
-            (statusMap[a.status as keyof typeof statusMap] ?? 0) -
-            (statusMap[b.status as keyof typeof statusMap] ?? 0)
+            (statusOrder[a.status as keyof typeof statusOrder] || 0) -
+            (statusOrder[b.status as keyof typeof statusOrder] || 0)
           );
         case "storyPoints":
           return b.storyPoints - a.storyPoints;
@@ -187,51 +172,66 @@ export default function MyWorkPage() {
     });
 
     return filtered;
-  }, [isAuthChecked, tasks, searchQuery, sortBy, filterBy]);
+  }, [tasks, searchQuery, sortBy, filterBy]);
 
-  const pinnedTasksList = filteredAndSortedTasks.filter((t) =>
-    pinnedTasks.includes(t.id)
+  const pinnedTasksList = filteredAndSortedTasks.filter((task) =>
+    pinnedTasks.includes(task.id),
   );
   const unpinnedTasksList = filteredAndSortedTasks.filter(
-    (t) => !pinnedTasks.includes(t.id)
+    (task) => !pinnedTasks.includes(task.id),
   );
 
-  // === Stats Calculation ===
+  // Calculate progress stats
   const stats = useMemo(() => {
-    if (!isAuthChecked)
-      return {
-        total: 0,
-        completed: 0,
-        inProgress: 0,
-        todo: 0,
-        totalPoints: 0,
-        completedPoints: 0,
-        completionRate: 0,
-        pointsProgress: 0,
-      };
-
     const total = tasks.length;
     const completed = tasks.filter((t) => t.status === "Done").length;
     const inProgress = tasks.filter((t) => t.status === "In Progress").length;
     const todo = tasks.filter((t) => t.status === "To Do").length;
-    const totalPoints = tasks.reduce((acc, t) => acc + t.storyPoints, 0);
+    const totalPoints = tasks.reduce((sum, t) => sum + t.storyPoints, 0);
     const completedPoints = tasks
       .filter((t) => t.status === "Done")
-      .reduce((acc, t) => acc + t.storyPoints, 0);
+      .reduce((sum, t) => sum + t.storyPoints, 0);
 
     return {
       total,
       completed,
       inProgress,
       todo,
+      completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+      pointsProgress:
+        totalPoints > 0 ? Math.round((completedPoints / totalPoints) * 100) : 0,
       totalPoints,
       completedPoints,
-      completionRate: total ? Math.round((completed / total) * 100) : 0,
-      pointsProgress: totalPoints
-        ? Math.round((completedPoints / totalPoints) * 100)
-        : 0,
     };
-  }, [isAuthChecked, tasks]);
+  }, [tasks]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "To Do":
+        return "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200";
+      case "In Progress":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "Done":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "Critical":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      case "High":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
+      case "Medium":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case "Low":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
 
   const getDaysUntilDue = (dueDate?: string) => {
     if (!dueDate) return null;
@@ -241,24 +241,6 @@ export default function MyWorkPage() {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
   };
-
-  const getStatusColor = (status: string) =>
-    status === "Done"
-      ? "bg-green-100 dark:bg-green-900 dark:text-green-200"
-      : status === "In Progress"
-      ? "bg-blue-100 dark:bg-blue-900 dark:text-blue-200"
-      : "bg-slate-100 dark:bg-slate-800";
-
-  const getPriorityColor = (priority: string) =>
-    priority === "Critical"
-      ? "bg-red-100 dark:bg-red-900 dark:text-red-200"
-      : priority === "High"
-      ? "bg-orange-100 dark:bg-orange-900 dark:text-orange-200"
-      : priority === "Medium"
-      ? "bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-200"
-      : "bg-green-100 dark:bg-green-900 dark:text-green-200";
-
-  if (!isAuthChecked) return null;
 
   const TaskCard = ({ task, isPinned }: { task: Task; isPinned: boolean }) => {
     const daysUntilDue = getDaysUntilDue(task.dueDate);
@@ -328,17 +310,17 @@ export default function MyWorkPage() {
                     daysUntilDue !== null && daysUntilDue < 0
                       ? "text-red-600 dark:text-red-400"
                       : daysUntilDue !== null && daysUntilDue <= 2
-                      ? "text-orange-600 dark:text-orange-400"
-                      : "text-slate-600 dark:text-slate-400"
+                        ? "text-orange-600 dark:text-orange-400"
+                        : "text-slate-600 dark:text-slate-400",
                   )}
                 >
                   {daysUntilDue !== null && daysUntilDue === 0
                     ? "Due today"
                     : daysUntilDue !== null && daysUntilDue < 0
-                    ? `${Math.abs(daysUntilDue)}d overdue`
-                    : daysUntilDue !== null
-                    ? `${daysUntilDue}d left`
-                    : "No due date"}
+                      ? `${Math.abs(daysUntilDue)}d overdue`
+                      : daysUntilDue !== null
+                        ? `${daysUntilDue}d left`
+                        : "No due date"}
                 </span>
               </div>
             )}

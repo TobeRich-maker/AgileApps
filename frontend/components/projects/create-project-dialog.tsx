@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,8 +23,7 @@ import {
 } from "@/components/ui/select";
 import type { Project, ProjectStatus } from "@/lib/stores/project-store";
 import { Loader2 } from "lucide-react";
-
-import { projectsApi } from "@/lib/api/projects"; // import sesuai path
+import { projectsApi } from "@/lib/api/projects";
 
 interface CreateProjectDialogProps {
   open: boolean;
@@ -44,40 +42,36 @@ export function CreateProjectDialog({
     name: project?.name || "",
     description: project?.description || "",
     status: project?.status || ("Active" as ProjectStatus),
+    start_date: project?.start_date || "",
+    end_date: project?.end_date || "",
+    team_id: "", // Tambahkan ini sesuai konteks ID tim yang tersedia
   });
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    try {
-      const payload = {
-        name: formData.name,
-        description: formData.description,
-        status: formData.status.toLowerCase().replace(" ", "_") as
-          | "active"
-          | "on_hold"
-          | "completed",
-      };
+    const payload = {
+      name: formData.name,
+      description: formData.description,
+      status: formData.status,
+      start_date: formData.start_date || undefined,
+      end_date: formData.end_date || undefined,
+      team_id: formData.team_id || undefined,
+    };
 
-      const newProject = await projectsApi.create(payload);
+    onSubmit(payload); // serahkan ke parent
+    onOpenChange(false);
 
-      console.log("✅ Project berhasil dibuat:", newProject);
-
-      onSubmit({
-        ...newProject,
-        teamMembers: newProject.members || [],
-        sprintCount: newProject.sprints?.length || 0,
-      });
-
-      onOpenChange(false);
-      setFormData({ name: "", description: "", status: "Active" });
-    } catch (error) {
-      console.error("❌ Gagal membuat project:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    setFormData({
+      name: "",
+      description: "",
+      status: "Active",
+      start_date: "",
+      end_date: "",
+      team_id: "",
+    });
   };
 
   return (
@@ -95,6 +89,7 @@ export function CreateProjectDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
+            {/* Project Name */}
             <div className="space-y-2">
               <Label htmlFor="name">Project Name</Label>
               <Input
@@ -107,6 +102,8 @@ export function CreateProjectDialog({
                 required
               />
             </div>
+
+            {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
@@ -122,6 +119,8 @@ export function CreateProjectDialog({
                 rows={3}
               />
             </div>
+
+            {/* Status */}
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select
@@ -140,7 +139,51 @@ export function CreateProjectDialog({
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Start Date */}
+            <div className="space-y-2">
+              <Label htmlFor="start_date">Start Date</Label>
+              <Input
+                id="start_date"
+                type="date"
+                value={formData.start_date}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    start_date: e.target.value,
+                  }))
+                }
+              />
+            </div>
+
+            {/* End Date */}
+            <div className="space-y-2">
+              <Label htmlFor="end_date">End Date</Label>
+              <Input
+                id="end_date"
+                type="date"
+                value={formData.end_date}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, end_date: e.target.value }))
+                }
+              />
+            </div>
+
+            {/* Team ID */}
+            <div className="space-y-2">
+              <Label htmlFor="team_id">Team ID</Label>
+              <Input
+                id="team_id"
+                value={formData.team_id}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, team_id: e.target.value }))
+                }
+                placeholder="Enter team ID"
+              />
+            </div>
           </div>
+
+          {/* Footer */}
           <DialogFooter>
             <Button
               type="button"

@@ -1,34 +1,53 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { MainLayout } from "@/components/layout/main-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Search, CalendarIcon, Activity, CheckSquare, FolderKanban, Users, GitBranch, Clock } from "lucide-react"
-import { format } from "date-fns"
+import { useState } from "react";
+import { MainLayout } from "@/components/layout/main-layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Search,
+  CalendarIcon,
+  Activity,
+  CheckSquare,
+  FolderKanban,
+  Users,
+  GitBranch,
+  Clock,
+} from "lucide-react";
+import { format } from "date-fns";
 
 interface AuditLogEntry {
-  id: string
-  action: string
-  actor: string
-  actorId: string
-  target: string
-  targetType: "task" | "project" | "sprint" | "user" | "role"
-  targetId: string
-  timestamp: string
-  details: string
+  id: string;
+  action: string;
+  actor: string;
+  actorId: string;
+  target: string;
+  targetType: "task" | "project" | "sprint" | "user" | "role";
+  targetId: string;
+  timestamp: string;
+  details: string;
   metadata?: {
-    oldValue?: string
-    newValue?: string
-    projectName?: string
-    sprintName?: string
-  }
+    oldValue?: string;
+    newValue?: string;
+    projectName?: string;
+    sprintName?: string;
+  };
 }
 
 const mockAuditLog: AuditLogEntry[] = [
@@ -104,14 +123,14 @@ const mockAuditLog: AuditLogEntry[] = [
     details: "Created new project with 3 team members",
     metadata: {},
   },
-]
+];
 
 export default function AuditLogPage() {
-  const [auditLog, setAuditLog] = useState<AuditLogEntry[]>(mockAuditLog)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterType, setFilterType] = useState("all")
-  const [filterActor, setFilterActor] = useState("all")
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({})
+  const [auditLog, setAuditLog] = useState<AuditLogEntry[]>(mockAuditLog);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [filterActor, setFilterActor] = useState("all");
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
 
   const actionTypes = [
     { value: "all", label: "All Actions" },
@@ -121,83 +140,89 @@ export default function AuditLogPage() {
     { value: "sprint_completed", label: "Sprint Completed" },
     { value: "project_created", label: "Project Created" },
     { value: "user_role_changed", label: "User Role Changed" },
-  ]
+  ];
 
-  const uniqueActors = Array.from(new Set(auditLog.map((entry) => entry.actor)))
+  const uniqueActors = Array.from(
+    new Set(auditLog.map((entry) => entry.actor)),
+  );
 
   const filteredLog = auditLog.filter((entry) => {
     const matchesSearch =
       entry.target.toLowerCase().includes(searchTerm.toLowerCase()) ||
       entry.actor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      entry.details.toLowerCase().includes(searchTerm.toLowerCase())
+      entry.details.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesType = filterType === "all" || entry.action === filterType
-    const matchesActor = filterActor === "all" || entry.actor === filterActor
+    const matchesType = filterType === "all" || entry.action === filterType;
+    const matchesActor = filterActor === "all" || entry.actor === filterActor;
 
-    let matchesDate = true
+    let matchesDate = true;
     if (dateRange.from || dateRange.to) {
-      const entryDate = new Date(entry.timestamp)
-      if (dateRange.from && entryDate < dateRange.from) matchesDate = false
-      if (dateRange.to && entryDate > dateRange.to) matchesDate = false
+      const entryDate = new Date(entry.timestamp);
+      if (dateRange.from && entryDate < dateRange.from) matchesDate = false;
+      if (dateRange.to && entryDate > dateRange.to) matchesDate = false;
     }
 
-    return matchesSearch && matchesType && matchesActor && matchesDate
-  })
+    return matchesSearch && matchesType && matchesActor && matchesDate;
+  });
 
   const getActionIcon = (action: string) => {
     switch (action) {
       case "task_status_changed":
       case "task_assigned":
-        return <CheckSquare className="h-4 w-4" />
+        return <CheckSquare className="h-4 w-4" />;
       case "sprint_started":
       case "sprint_completed":
-        return <GitBranch className="h-4 w-4" />
+        return <GitBranch className="h-4 w-4" />;
       case "project_created":
-        return <FolderKanban className="h-4 w-4" />
+        return <FolderKanban className="h-4 w-4" />;
       case "user_role_changed":
-        return <Users className="h-4 w-4" />
+        return <Users className="h-4 w-4" />;
       default:
-        return <Activity className="h-4 w-4" />
+        return <Activity className="h-4 w-4" />;
     }
-  }
+  };
 
   const getActionColor = (action: string) => {
     switch (action) {
       case "task_status_changed":
-        return "text-blue-600"
+        return "text-blue-600";
       case "task_assigned":
-        return "text-green-600"
+        return "text-green-600";
       case "sprint_started":
-        return "text-purple-600"
+        return "text-purple-600";
       case "sprint_completed":
-        return "text-indigo-600"
+        return "text-indigo-600";
       case "project_created":
-        return "text-emerald-600"
+        return "text-emerald-600";
       case "user_role_changed":
-        return "text-orange-600"
+        return "text-orange-600";
       default:
-        return "text-gray-600"
+        return "text-gray-600";
     }
-  }
+  };
 
   const formatTimeAgo = (timestamp: string) => {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60),
+    );
 
-    if (diffInHours < 1) return "Just now"
-    if (diffInHours < 24) return `${diffInHours}h ago`
-    const diffInDays = Math.floor(diffInHours / 24)
-    if (diffInDays < 7) return `${diffInDays}d ago`
-    return date.toLocaleDateString()
-  }
+    if (diffInHours < 1) return "Just now";
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+    return date.toLocaleDateString();
+  };
 
   return (
     <MainLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Audit Log</h1>
-          <p className="text-muted-foreground">Track all important project activities and changes.</p>
+          <p className="text-muted-foreground">
+            Track all important project activities and changes.
+          </p>
         </div>
 
         {/* Filters */}
@@ -248,7 +273,8 @@ export default function AuditLogPage() {
                     {dateRange.from ? (
                       dateRange.to ? (
                         <>
-                          {format(dateRange.from, "LLL dd")} - {format(dateRange.to, "LLL dd")}
+                          {format(dateRange.from, "LLL dd")} -{" "}
+                          {format(dateRange.to, "LLL dd")}
                         </>
                       ) : (
                         format(dateRange.from, "LLL dd, y")
@@ -284,15 +310,22 @@ export default function AuditLogPage() {
           <CardContent>
             <div className="space-y-4">
               {filteredLog.map((entry, index) => (
-                <div key={entry.id} className="flex items-start gap-4 pb-4 border-b border-gray-100 last:border-0">
-                  <div className={`flex-shrink-0 p-2 rounded-full bg-gray-100 ${getActionColor(entry.action)}`}>
+                <div
+                  key={entry.id}
+                  className="flex items-start gap-4 pb-4 border-b border-gray-100 last:border-0"
+                >
+                  <div
+                    className={`flex-shrink-0 p-2 rounded-full bg-gray-100 ${getActionColor(entry.action)}`}
+                  >
                     {getActionIcon(entry.action)}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs">{entry.actor.charAt(0).toUpperCase()}</AvatarFallback>
+                        <AvatarFallback className="text-xs">
+                          {entry.actor.charAt(0).toUpperCase()}
+                        </AvatarFallback>
                       </Avatar>
                       <span className="text-sm font-medium">{entry.actor}</span>
                       <Badge variant="outline" className="text-xs">
@@ -301,11 +334,14 @@ export default function AuditLogPage() {
                     </div>
 
                     <p className="text-sm text-gray-700 mb-1">
-                      <span className="font-medium">{entry.target}</span> - {entry.details}
+                      <span className="font-medium">{entry.target}</span> -{" "}
+                      {entry.details}
                     </p>
 
                     {entry.metadata?.projectName && (
-                      <p className="text-xs text-muted-foreground mb-1">Project: {entry.metadata.projectName}</p>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Project: {entry.metadata.projectName}
+                      </p>
                     )}
 
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -322,12 +358,14 @@ export default function AuditLogPage() {
             {filteredLog.length === 0 && (
               <div className="text-center py-12 text-muted-foreground">
                 <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-sm">No activities found matching your filters.</p>
+                <p className="text-sm">
+                  No activities found matching your filters.
+                </p>
               </div>
             )}
           </CardContent>
         </Card>
       </div>
     </MainLayout>
-  )
+  );
 }

@@ -7,7 +7,7 @@ export const velocityData = [
   { sprint: "Sprint 22", planned: 32, completed: 29, team: "Team Alpha" },
   { sprint: "Sprint 23", planned: 35, completed: 33, team: "Team Alpha" },
   { sprint: "Sprint 24", planned: 38, completed: 36, team: "Team Alpha" },
-]
+];
 
 export const burndownData = [
   { day: 1, remaining: 120, ideal: 120 },
@@ -26,7 +26,7 @@ export const burndownData = [
   { day: 14, remaining: 38, ideal: 16 },
   { day: 15, remaining: 28, ideal: 8 },
   { day: 16, remaining: 18, ideal: 0 },
-]
+];
 
 export const teamPerformanceData = [
   {
@@ -69,7 +69,7 @@ export const teamPerformanceData = [
     efficiency: 82,
     role: "QA Engineer",
   },
-]
+];
 
 export const projectHealthData = [
   {
@@ -102,7 +102,7 @@ export const projectHealthData = [
     budget: 75000,
     spent: 45000,
   },
-]
+];
 
 export const resourceUtilizationData = [
   { month: "Jan", frontend: 85, backend: 92, design: 78, qa: 88 },
@@ -111,7 +111,7 @@ export const resourceUtilizationData = [
   { month: "Apr", frontend: 87, backend: 91, design: 88, qa: 87 },
   { month: "May", frontend: 90, backend: 88, design: 90, qa: 92 },
   { month: "Jun", frontend: 93, backend: 95, design: 87, qa: 89 },
-]
+];
 
 export const cumulativeFlowData = [
   { week: "Week 1", todo: 45, inProgress: 12, done: 8 },
@@ -122,7 +122,7 @@ export const cumulativeFlowData = [
   { week: "Week 6", todo: 28, inProgress: 12, done: 58 },
   { week: "Week 7", todo: 24, inProgress: 10, done: 68 },
   { week: "Week 8", todo: 20, inProgress: 8, done: 78 },
-]
+];
 
 export const defectTrendData = [
   { sprint: "Sprint 19", found: 8, fixed: 6, remaining: 2 },
@@ -131,7 +131,7 @@ export const defectTrendData = [
   { sprint: "Sprint 22", found: 9, fixed: 7, remaining: 4 },
   { sprint: "Sprint 23", found: 5, fixed: 6, remaining: 3 },
   { sprint: "Sprint 24", found: 7, fixed: 5, remaining: 5 },
-]
+];
 
 export const sprintCompletionData = [
   { sprint: "Sprint 19", planned: 25, completed: 23, carryover: 2 },
@@ -140,7 +140,7 @@ export const sprintCompletionData = [
   { sprint: "Sprint 22", planned: 32, completed: 29, carryover: 3 },
   { sprint: "Sprint 23", planned: 35, completed: 33, carryover: 2 },
   { sprint: "Sprint 24", planned: 38, completed: 36, carryover: 2 },
-]
+];
 
 export const taskDistributionData = [
   { type: "Feature", count: 45, percentage: 52 },
@@ -148,14 +148,14 @@ export const taskDistributionData = [
   { type: "Technical Debt", count: 12, percentage: 14 },
   { type: "Documentation", count: 8, percentage: 9 },
   { type: "Testing", count: 4, percentage: 4 },
-]
+];
 
 export const difficultyDistributionData = [
   { difficulty: "Easy", count: 28, color: "#10B981" },
   { difficulty: "Medium", count: 35, color: "#F59E0B" },
   { difficulty: "Hard", count: 22, color: "#EF4444" },
   { difficulty: "Extreme", count: 8, color: "#7C2D12" },
-]
+];
 
 export const timeTrackingData = [
   {
@@ -186,7 +186,7 @@ export const timeTrackingData = [
     efficiency: 133,
     developer: "Sarah Wilson",
   },
-]
+];
 
 export const clientSatisfactionData = [
   { month: "Jan", satisfaction: 4.2, feedback: 12 },
@@ -195,27 +195,42 @@ export const clientSatisfactionData = [
   { month: "Apr", satisfaction: 4.6, feedback: 14 },
   { month: "May", satisfaction: 4.5, feedback: 16 },
   { month: "Jun", satisfaction: 4.7, feedback: 19 },
-]
+];
 
 export const budgetTrackingData = [
-  { category: "Development", budgeted: 150000, spent: 125000, remaining: 25000 },
+  {
+    category: "Development",
+    budgeted: 150000,
+    spent: 125000,
+    remaining: 25000,
+  },
   { category: "Design", budgeted: 50000, spent: 42000, remaining: 8000 },
   { category: "Testing", budgeted: 30000, spent: 28000, remaining: 2000 },
-  { category: "Infrastructure", budgeted: 25000, spent: 22000, remaining: 3000 },
-  { category: "Tools & Licenses", budgeted: 15000, spent: 13000, remaining: 2000 },
-]
+  {
+    category: "Infrastructure",
+    budgeted: 25000,
+    spent: 22000,
+    remaining: 3000,
+  },
+  {
+    category: "Tools & Licenses",
+    budgeted: 15000,
+    spent: 13000,
+    remaining: 2000,
+  },
+];
 
 // Activity heatmap data for productivity tracking
 export const activityHeatmapData = Array.from({ length: 365 }, (_, i) => {
-  const date = new Date()
-  date.setDate(date.getDate() - (364 - i))
+  const date = new Date();
+  date.setDate(date.getDate() - (364 - i));
 
   return {
     date: date.toISOString().split("T")[0],
     count: Math.floor(Math.random() * 10), // 0-9 tasks completed
     level: Math.floor(Math.random() * 5), // 0-4 intensity level
-  }
-})
+  };
+});
 
 // Weekly activity summary
 export const weeklyActivityData = [
@@ -226,7 +241,7 @@ export const weeklyActivityData = [
   { day: "Fri", tasks: 9, hours: 7.3 },
   { day: "Sat", tasks: 3, hours: 2.5 },
   { day: "Sun", tasks: 1, hours: 1.0 },
-]
+];
 
 // Monthly productivity trends
 export const monthlyProductivityData = [
@@ -236,4 +251,4 @@ export const monthlyProductivityData = [
   { month: "Apr", tasksCompleted: 165, hoursWorked: 172, efficiency: 96 },
   { month: "May", tasksCompleted: 189, hoursWorked: 176, efficiency: 107 },
   { month: "Jun", tasksCompleted: 172, hoursWorked: 168, efficiency: 102 },
-]
+];

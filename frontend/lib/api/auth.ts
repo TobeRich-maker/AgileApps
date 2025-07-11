@@ -9,17 +9,19 @@ import type {
 
 export const authApi = {
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>("/login", credentials);
-
-    // Debug log (opsional)
-    console.log("🛰️ Raw login response:", response.data);
-
-    return response.data; // ✅ karena structure-nya langsung { user, token }
+    const response = await api.post<ApiResponse<AuthResponse>>(
+      "/login",
+      credentials
+    );
+    return response.data.data;
   },
 
   register: async (userData: RegisterRequest): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>("/auth/register", userData);
-    return response.data;
+    const response = await api.post<ApiResponse<AuthResponse>>(
+      "/auth/register",
+      userData
+    );
+    return response.data.data;
   },
 
   logout: async (): Promise<void> => {
@@ -27,14 +29,17 @@ export const authApi = {
   },
 
   refreshToken: async (refreshToken: string): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>("/auth/refresh", {
-      refreshToken,
-    });
-    return response.data;
+    const response = await api.post<ApiResponse<AuthResponse>>(
+      "/auth/refresh",
+      {
+        refreshToken,
+      }
+    );
+    return response.data.data;
   },
 
   me: async (): Promise<User> => {
-    const response = await api.get<User>("/me");
-    return response.data;
+    const response = await api.get<ApiResponse<User>>("/project");
+    return response.data.data;
   },
 };

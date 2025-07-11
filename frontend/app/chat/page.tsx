@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { MainLayout } from "@/components/layout/main-layout"
-import { ChatPanel } from "@/components/chat/chat-panel"
+import { MainLayout } from "@/components/layout/main-layout";
+import { ChatPanel } from "@/components/chat/chat-panel";
 
 export default function ChatPage() {
   return (
@@ -10,5 +10,5 @@ export default function ChatPage() {
         <ChatPanel />
       </div>
     </MainLayout>
-  )
+  );
 }

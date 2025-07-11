@@ -1,28 +1,34 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { CheckSquare, Plus, X, AlertCircle } from "lucide-react"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { CheckSquare, Plus, X, AlertCircle } from "lucide-react";
 
 interface ChecklistItem {
-  id: string
-  title: string
-  description?: string
-  completed: boolean
-  required: boolean
-  completedBy?: string
-  completedAt?: string
+  id: string;
+  title: string;
+  description?: string;
+  completed: boolean;
+  required: boolean;
+  completedBy?: string;
+  completedAt?: string;
 }
 
 interface TaskChecklistProps {
-  taskId: string
+  taskId: string;
 }
 
 const defaultChecklist: ChecklistItem[] = [
@@ -65,22 +71,25 @@ const defaultChecklist: ChecklistItem[] = [
     completed: false,
     required: false,
   },
-]
+];
 
 export function TaskChecklist({ taskId }: TaskChecklistProps) {
-  const [checklist, setChecklist] = useState<ChecklistItem[]>(defaultChecklist)
-  const [isAddingItem, setIsAddingItem] = useState(false)
+  const [checklist, setChecklist] = useState<ChecklistItem[]>(defaultChecklist);
+  const [isAddingItem, setIsAddingItem] = useState(false);
   const [newItem, setNewItem] = useState({
     title: "",
     description: "",
     required: false,
-  })
+  });
 
-  const completedCount = checklist.filter((item) => item.completed).length
-  const totalCount = checklist.length
-  const requiredCount = checklist.filter((item) => item.required).length
-  const completedRequiredCount = checklist.filter((item) => item.required && item.completed).length
-  const progressPercentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
+  const completedCount = checklist.filter((item) => item.completed).length;
+  const totalCount = checklist.length;
+  const requiredCount = checklist.filter((item) => item.required).length;
+  const completedRequiredCount = checklist.filter(
+    (item) => item.required && item.completed,
+  ).length;
+  const progressPercentage =
+    totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
   const handleToggleItem = (itemId: string) => {
     setChecklist((prev) =>
@@ -91,15 +100,15 @@ export function TaskChecklist({ taskId }: TaskChecklistProps) {
             completed: !item.completed,
             completedBy: !item.completed ? "Current User" : undefined,
             completedAt: !item.completed ? new Date().toISOString() : undefined,
-          }
+          };
         }
-        return item
+        return item;
       }),
-    )
-  }
+    );
+  };
 
   const handleAddItem = () => {
-    if (!newItem.title.trim()) return
+    if (!newItem.title.trim()) return;
 
     const item: ChecklistItem = {
       id: Date.now().toString(),
@@ -107,29 +116,31 @@ export function TaskChecklist({ taskId }: TaskChecklistProps) {
       description: newItem.description || undefined,
       completed: false,
       required: newItem.required,
-    }
+    };
 
-    setChecklist((prev) => [...prev, item])
-    setNewItem({ title: "", description: "", required: false })
-    setIsAddingItem(false)
-  }
+    setChecklist((prev) => [...prev, item]);
+    setNewItem({ title: "", description: "", required: false });
+    setIsAddingItem(false);
+  };
 
   const handleRemoveItem = (itemId: string) => {
-    setChecklist((prev) => prev.filter((item) => item.id !== itemId))
-  }
+    setChecklist((prev) => prev.filter((item) => item.id !== itemId));
+  };
 
   const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60),
+    );
 
-    if (diffInHours < 1) return "Just now"
-    if (diffInHours < 24) return `${diffInHours}h ago`
-    const diffInDays = Math.floor(diffInHours / 24)
-    return `${diffInDays}d ago`
-  }
+    if (diffInHours < 1) return "Just now";
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays}d ago`;
+  };
 
-  const isTaskReady = completedRequiredCount === requiredCount
+  const isTaskReady = completedRequiredCount === requiredCount;
 
   return (
     <Card>
@@ -156,7 +167,9 @@ export function TaskChecklist({ taskId }: TaskChecklistProps) {
                   <Input
                     id="title"
                     value={newItem.title}
-                    onChange={(e) => setNewItem((prev) => ({ ...prev, title: e.target.value }))}
+                    onChange={(e) =>
+                      setNewItem((prev) => ({ ...prev, title: e.target.value }))
+                    }
                     placeholder="Enter checklist item title"
                   />
                 </div>
@@ -165,7 +178,12 @@ export function TaskChecklist({ taskId }: TaskChecklistProps) {
                   <Input
                     id="description"
                     value={newItem.description}
-                    onChange={(e) => setNewItem((prev) => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) =>
+                      setNewItem((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
                     placeholder="Enter description"
                   />
                 </div>
@@ -173,15 +191,26 @@ export function TaskChecklist({ taskId }: TaskChecklistProps) {
                   <Checkbox
                     id="required"
                     checked={newItem.required}
-                    onCheckedChange={(checked) => setNewItem((prev) => ({ ...prev, required: checked as boolean }))}
+                    onCheckedChange={(checked) =>
+                      setNewItem((prev) => ({
+                        ...prev,
+                        required: checked as boolean,
+                      }))
+                    }
                   />
                   <Label htmlFor="required">Required for completion</Label>
                 </div>
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setIsAddingItem(false)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsAddingItem(false)}
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={handleAddItem} className="bg-green-600 hover:bg-green-700">
+                  <Button
+                    onClick={handleAddItem}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
                     Add Item
                   </Button>
                 </div>
@@ -195,7 +224,9 @@ export function TaskChecklist({ taskId }: TaskChecklistProps) {
             <span>
               Progress: {completedCount}/{totalCount} completed
             </span>
-            <span className="text-muted-foreground">{Math.round(progressPercentage)}%</span>
+            <span className="text-muted-foreground">
+              {Math.round(progressPercentage)}%
+            </span>
           </div>
           <Progress value={progressPercentage} className="h-2" />
 
@@ -204,11 +235,17 @@ export function TaskChecklist({ taskId }: TaskChecklistProps) {
               Required: {completedRequiredCount}/{requiredCount}
             </span>
             {isTaskReady ? (
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
+              <Badge
+                variant="secondary"
+                className="bg-green-100 text-green-800"
+              >
                 Ready for deployment
               </Badge>
             ) : (
-              <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 flex items-center gap-1">
+              <Badge
+                variant="secondary"
+                className="bg-yellow-100 text-yellow-800 flex items-center gap-1"
+              >
                 <AlertCircle className="h-3 w-3" />
                 Pending requirements
               </Badge>
@@ -219,12 +256,21 @@ export function TaskChecklist({ taskId }: TaskChecklistProps) {
 
       <CardContent className="space-y-3">
         {checklist.map((item) => (
-          <div key={item.id} className="flex items-start gap-3 p-3 rounded-lg border hover:bg-gray-50">
-            <Checkbox checked={item.completed} onCheckedChange={() => handleToggleItem(item.id)} className="mt-0.5" />
+          <div
+            key={item.id}
+            className="flex items-start gap-3 p-3 rounded-lg border hover:bg-gray-50"
+          >
+            <Checkbox
+              checked={item.completed}
+              onCheckedChange={() => handleToggleItem(item.id)}
+              className="mt-0.5"
+            />
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <span className={`text-sm font-medium ${item.completed ? "line-through text-muted-foreground" : ""}`}>
+                <span
+                  className={`text-sm font-medium ${item.completed ? "line-through text-muted-foreground" : ""}`}
+                >
                   {item.title}
                 </span>
                 {item.required && (
@@ -235,14 +281,17 @@ export function TaskChecklist({ taskId }: TaskChecklistProps) {
               </div>
 
               {item.description && (
-                <p className={`text-xs text-muted-foreground mb-2 ${item.completed ? "line-through" : ""}`}>
+                <p
+                  className={`text-xs text-muted-foreground mb-2 ${item.completed ? "line-through" : ""}`}
+                >
                   {item.description}
                 </p>
               )}
 
               {item.completed && item.completedBy && (
                 <div className="text-xs text-muted-foreground">
-                  Completed by {item.completedBy} {item.completedAt && formatTimeAgo(item.completedAt)}
+                  Completed by {item.completedBy}{" "}
+                  {item.completedAt && formatTimeAgo(item.completedAt)}
                 </div>
               )}
             </div>
@@ -261,10 +310,12 @@ export function TaskChecklist({ taskId }: TaskChecklistProps) {
         {checklist.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <CheckSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No checklist items yet. Add items to track task completion.</p>
+            <p className="text-sm">
+              No checklist items yet. Add items to track task completion.
+            </p>
           </div>
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

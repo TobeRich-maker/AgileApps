@@ -26,7 +26,6 @@ import {
   Target,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { withAuthProtection } from "@/lib/hoc/withAuthProtection";
 
 interface CalendarEvent {
   id: string;
@@ -45,6 +44,7 @@ interface CalendarEvent {
   description?: string;
 }
 
+// Mock calendar events
 const mockEvents: CalendarEvent[] = [
   {
     id: "1",
@@ -104,40 +104,7 @@ const mockEvents: CalendarEvent[] = [
   },
 ];
 
-function formatTime(time?: string) {
-  if (!time) return "";
-  const [h, m] = time.split(":");
-  const hour = parseInt(h);
-  const ampm = hour >= 12 ? "PM" : "AM";
-  const displayHour = hour % 12 || 12;
-  return `${displayHour}:${m} ${ampm}`;
-}
-
-function getPriorityColor(priority?: string) {
-  return (
-    {
-      Critical: "border-l-red-500",
-      High: "border-l-orange-500",
-      Medium: "border-l-yellow-500",
-      Low: "border-l-green-500",
-    }[priority ?? ""] || "border-l-slate-300"
-  );
-}
-
-function getEventTypeColor(type: CalendarEvent["type"]) {
-  return (
-    {
-      task: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-      sprint:
-        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-      meeting:
-        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      deadline: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-    }[type] || "bg-gray-100 text-gray-800"
-  );
-}
-
-export default withAuthProtection(function CalendarPage() {
+export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>(mockEvents);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -146,6 +113,7 @@ export default withAuthProtection(function CalendarPage() {
     "all" | "task" | "sprint" | "meeting" | "deadline"
   >("all");
 
+  // Get calendar days for current month
   const getCalendarDays = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -166,6 +134,7 @@ export default withAuthProtection(function CalendarPage() {
     return days;
   };
 
+  // Get events for a specific date
   const getEventsForDate = (date: Date) => {
     const dateString = date.toISOString().split("T")[0];
     return events.filter((event) => {
@@ -176,6 +145,7 @@ export default withAuthProtection(function CalendarPage() {
     });
   };
 
+  // Get today's events
   const getTodaysEvents = () => {
     const today = new Date().toISOString().split("T")[0];
     return events
@@ -186,6 +156,7 @@ export default withAuthProtection(function CalendarPage() {
       });
   };
 
+  // Get upcoming urgent tasks (next 7 days)
   const getUpcomingUrgentTasks = () => {
     const today = new Date();
     const nextWeek = new Date(today);
@@ -229,6 +200,7 @@ export default withAuthProtection(function CalendarPage() {
         return "bg-gray-100 text-gray-800";
     }
   };
+
   const getPriorityColor = (priority?: string) => {
     switch (priority) {
       case "Critical":
@@ -244,6 +216,15 @@ export default withAuthProtection(function CalendarPage() {
     }
   };
 
+  const formatTime = (time?: string) => {
+    if (!time) return "";
+    const [hours, minutes] = time.split(":");
+    const hour = Number.parseInt(hours);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
+
   const isToday = (date: Date) => {
     const today = new Date();
     return date.toDateString() === today.toDateString();
@@ -251,13 +232,6 @@ export default withAuthProtection(function CalendarPage() {
 
   const isCurrentMonth = (date: Date) => {
     return date.getMonth() === currentDate.getMonth();
-  };
-
-  const filterEvents = (d: Date) => {
-    const date = d.toISOString().split("T")[0];
-    return events.filter(
-      (e) => e.date === date && (filterType === "all" || e.type === filterType)
-    );
   };
 
   const calendarDays = getCalendarDays();
@@ -350,7 +324,7 @@ export default withAuthProtection(function CalendarPage() {
                       >
                         {day}
                       </div>
-                    )
+                    ),
                   )}
                 </div>
 
@@ -368,7 +342,7 @@ export default withAuthProtection(function CalendarPage() {
                           isCurrentDay &&
                             "bg-navy-50 dark:bg-navy-900 border-navy-200 dark:border-navy-700",
                           !isCurrentMonthDay &&
-                            "text-slate-400 dark:text-slate-600 bg-slate-50 dark:bg-slate-800"
+                            "text-slate-400 dark:text-slate-600 bg-slate-50 dark:bg-slate-800",
                         )}
                         onClick={() =>
                           setSelectedDate(day.toISOString().split("T")[0])
@@ -377,7 +351,7 @@ export default withAuthProtection(function CalendarPage() {
                         <div
                           className={cn(
                             "text-sm font-medium mb-1",
-                            isCurrentDay && "text-navy-900 dark:text-navy-100"
+                            isCurrentDay && "text-navy-900 dark:text-navy-100",
                           )}
                         >
                           {day.getDate()}
@@ -390,7 +364,7 @@ export default withAuthProtection(function CalendarPage() {
                               className={cn(
                                 "text-xs p-1 rounded truncate border-l-2",
                                 getEventTypeColor(event.type),
-                                getPriorityColor(event.priority)
+                                getPriorityColor(event.priority),
                               )}
                               title={event.title}
                             >
@@ -434,7 +408,7 @@ export default withAuthProtection(function CalendarPage() {
                         key={event.id}
                         className={cn(
                           "p-3 rounded-lg border-l-4 bg-slate-50 dark:bg-slate-800",
-                          getPriorityColor(event.priority)
+                          getPriorityColor(event.priority),
                         )}
                       >
                         <div className="flex items-start justify-between mb-1">
@@ -582,14 +556,11 @@ export default withAuthProtection(function CalendarPage() {
                             member.tasks > member.capacity
                               ? "bg-red-500"
                               : member.tasks === member.capacity
-                              ? "bg-yellow-500"
-                              : "bg-green-500"
+                                ? "bg-yellow-500"
+                                : "bg-green-500",
                           )}
                           style={{
-                            width: `${Math.min(
-                              (member.tasks / member.capacity) * 100,
-                              100
-                            )}%`,
+                            width: `${Math.min((member.tasks / member.capacity) * 100, 100)}%`,
                           }}
                         />
                       </div>
@@ -603,4 +574,4 @@ export default withAuthProtection(function CalendarPage() {
       </div>
     </MainLayout>
   );
-});
+}

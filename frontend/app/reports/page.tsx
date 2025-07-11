@@ -19,9 +19,8 @@ import {
   Tooltip,
 } from "recharts";
 import { PieChartIcon, TrendingUp, Users } from "lucide-react";
-import { withAuthProtection } from "@/lib/hoc/withAuthProtection";
 
-function ReportsPage() {
+export default function ReportsPage() {
   const [velocityData] = useState([
     { sprint: "Sprint 19", planned: 25, completed: 23 },
     { sprint: "Sprint 20", planned: 30, completed: 28 },
@@ -192,4 +191,3 @@ function ReportsPage() {
     </MainLayout>
   );
 }
-export default withAuthProtection(ReportsPage);

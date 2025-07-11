@@ -1,14 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { MainLayout } from "@/components/layout/main-layout";
 import { ProjectCard } from "@/components/projects/project-card";
 import { CreateProjectDialog } from "@/components/projects/create-project-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useProjectStore, type Project } from "@/lib/stores/project-store";
-import { useAuthStore } from "@/lib/stores/auth-store";
 import { Plus, Search } from "lucide-react";
 import {
   Select,
@@ -18,79 +16,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { ProjectDifficulty } from "@/lib/types/api";
-
+import api from "@/lib/axios"; // pastikan kamu mengimpor api
 export default function ProjectsPage() {
-  const router = useRouter();
-  const { user, isAuthenticated, checkAuth } = useAuthStore();
-  const { projects, addProject, updateProject, deleteProject } =
-    useProjectStore();
+  const {
+    projects,
+    addProject,
+    updateProject,
+    deleteProject,
+    fetchProjects, // pastikan ini tersedia dari project-store.ts
+  } = useProjectStore();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | undefined>();
   const [difficultyFilter, setDifficultyFilter] = useState("all");
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
 
-  // Check login state on mount
   useEffect(() => {
-    checkAuth().finally(() => setIsAuthChecked(true));
-  }, [checkAuth]);
-
-  // Prevent rendering until auth is checked
-  useEffect(() => {
-    if (isAuthChecked && !isAuthenticated) {
-      router.push("/auth/login");
-    }
-  }, [isAuthChecked, isAuthenticated, router]);
-
-  // Load mock data if needed (only after auth is checked)
-  useEffect(() => {
-    if (!isAuthChecked || !isAuthenticated) return;
-
-    const mockProjects: Project[] = [
-      {
-        id: "1",
-        name: "E-commerce Platform",
-        description:
-          "Building a modern e-commerce platform with React and Node.js",
-        status: "Active",
-        difficulty: "Hard" as ProjectDifficulty,
-        createdAt: "2024-01-15",
-        updatedAt: "2024-01-20",
-        teamMembers: ["John Doe", "Jane Smith", "Mike Johnson"],
-        sprintCount: 5,
-      },
-      {
-        id: "2",
-        name: "Mobile Banking App",
-        description:
-          "Secure mobile banking application with biometric authentication",
-        status: "Active",
-        difficulty: "Extreme" as ProjectDifficulty,
-        createdAt: "2024-01-10",
-        updatedAt: "2024-01-18",
-        teamMembers: ["Sarah Wilson", "Tom Brown"],
-        sprintCount: 3,
-      },
-      {
-        id: "3",
-        name: "Analytics Dashboard",
-        description: "Real-time analytics dashboard for business intelligence",
-        status: "Completed",
-        difficulty: "Medium" as ProjectDifficulty,
-        createdAt: "2023-12-01",
-        updatedAt: "2024-01-05",
-        teamMembers: ["Alice Cooper", "Bob Davis", "Carol White", "David Lee"],
-        sprintCount: 8,
-      },
-    ];
-
     if (projects.length === 0) {
-      mockProjects.forEach((project) => addProject(project));
+      fetchProjects();
     }
-  }, [isAuthChecked, isAuthenticated, projects.length, addProject]);
-
-  if (!isAuthChecked) return null; // prevent rendering before auth check
+  }, [projects.length, fetchProjects]);
 
   const filteredProjects = projects.filter((project) => {
     const matchesSearch =
@@ -100,17 +45,53 @@ export default function ProjectsPage() {
       difficultyFilter === "all" || project.difficulty === difficultyFilter;
     return matchesSearch && matchesDifficulty;
   });
+  function capitalize(text: string): string {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
 
-  const handleCreateProject = (
+  const handleCreateProject = async (
     projectData: Omit<Project, "id" | "createdAt" | "updatedAt">
   ) => {
-    const newProject: Project = {
-      ...projectData,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    addProject(newProject);
+    try {
+      const payload = {
+        ...projectData,
+        status: projectData.status.toLowerCase().replace(" ", "_"), // ✅ fix di sini
+      };
+
+      const response = await api.post("/projects", payload);
+
+      const created = response.data;
+
+      const newProject: Project = {
+        id: created.id.toString(),
+        name: created.name,
+        description: created.description,
+        status:
+          created.status === "on_hold" ? "On Hold" : capitalize(created.status),
+        difficulty: created.difficulty ?? "Medium",
+        createdAt: created.created_at,
+        updatedAt: created.updated_at,
+        sprintCount: created.sprints?.length ?? 0,
+        teamMembers: created.members?.map((m: any) => m.name) ?? [],
+      };
+
+      addProject(newProject);
+      setIsCreateDialogOpen(false);
+    } catch (error: any) {
+      if (error.response) {
+        console.error("🧨 Server responded with:", error.response.data);
+        alert(
+          "Gagal membuat project: " +
+            JSON.stringify(error.response.data.errors ?? error.response.data)
+        );
+      } else if (error.request) {
+        console.error("🛰️ No response received:", error.request);
+        alert("Gagal membuat project: No response from server");
+      } else {
+        console.error("🐞 Error setting up request:", error.message);
+        alert("Gagal membuat project: " + error.message);
+      }
+    }
   };
 
   const handleEditProject = (project: Project) => {

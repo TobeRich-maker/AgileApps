@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -14,20 +14,26 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { Task, TaskStatus, TaskPriority } from "@/lib/stores/sprint-store"
-import { Loader2 } from "lucide-react"
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { Task, TaskStatus, TaskPriority } from "@/lib/stores/sprint-store";
+import { Loader2 } from "lucide-react";
 
 interface CreateTaskDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSubmit: (task: Omit<Task, "id" | "createdAt" | "updatedAt">) => void
-  initialStatus?: TaskStatus
-  task?: Task
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (task: Omit<Task, "id" | "createdAt" | "updatedAt">) => void;
+  initialStatus?: TaskStatus;
+  task?: Task;
 }
 
-const priorities: TaskPriority[] = ["Low", "Medium", "High", "Critical"]
+const priorities: TaskPriority[] = ["Low", "Medium", "High", "Critical"];
 
 export function CreateTaskDialog({
   open,
@@ -43,23 +49,23 @@ export function CreateTaskDialog({
     priority: task?.priority || ("Medium" as TaskPriority),
     storyPoints: task?.storyPoints || 1,
     assigneeName: task?.assigneeName || "",
-  })
-  const [isLoading, setIsLoading] = useState(false)
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500)) // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API call
 
       onSubmit({
         ...formData,
         sprintId: "current-sprint", // This would come from context
         assigneeId: formData.assigneeName ? "user-id" : undefined,
-      })
+      });
 
-      onOpenChange(false)
+      onOpenChange(false);
       if (!task) {
         setFormData({
           title: "",
@@ -68,14 +74,14 @@ export function CreateTaskDialog({
           priority: "Medium",
           storyPoints: 1,
           assigneeName: "",
-        })
+        });
       }
     } catch (error) {
-      console.error("Error creating task:", error)
+      console.error("Error creating task:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -83,7 +89,9 @@ export function CreateTaskDialog({
         <DialogHeader>
           <DialogTitle>{task ? "Edit Task" : "Create New Task"}</DialogTitle>
           <DialogDescription>
-            {task ? "Update the task details below." : "Fill in the details to create a new task."}
+            {task
+              ? "Update the task details below."
+              : "Fill in the details to create a new task."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -93,7 +101,9 @@ export function CreateTaskDialog({
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                }
                 placeholder="Enter task title"
                 required
               />
@@ -104,7 +114,12 @@ export function CreateTaskDialog({
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Enter task description"
                 rows={3}
               />
@@ -115,7 +130,9 @@ export function CreateTaskDialog({
                 <Label htmlFor="priority">Priority</Label>
                 <Select
                   value={formData.priority}
-                  onValueChange={(value: TaskPriority) => setFormData((prev) => ({ ...prev, priority: value }))}
+                  onValueChange={(value: TaskPriority) =>
+                    setFormData((prev) => ({ ...prev, priority: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select priority" />
@@ -134,7 +151,12 @@ export function CreateTaskDialog({
                 <Label htmlFor="storyPoints">Story Points</Label>
                 <Select
                   value={formData.storyPoints.toString()}
-                  onValueChange={(value) => setFormData((prev) => ({ ...prev, storyPoints: Number.parseInt(value) }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      storyPoints: Number.parseInt(value),
+                    }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Points" />
@@ -155,16 +177,29 @@ export function CreateTaskDialog({
               <Input
                 id="assignee"
                 value={formData.assigneeName}
-                onChange={(e) => setFormData((prev) => ({ ...prev, assigneeName: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    assigneeName: e.target.value,
+                  }))
+                }
                 placeholder="Enter assignee name"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading} className="bg-green-600 hover:bg-green-700">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="bg-green-600 hover:bg-green-700"
+            >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {task ? "Update Task" : "Create Task"}
             </Button>
@@ -172,5 +207,5 @@ export function CreateTaskDialog({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

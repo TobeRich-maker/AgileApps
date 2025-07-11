@@ -1,15 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Badge } from "@/components/ui/badge"
-import { Plus, X, Settings, Type, Hash, Calendar, List, ToggleLeft } from "lucide-react"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import {
+  Plus,
+  X,
+  Settings,
+  Type,
+  Hash,
+  Calendar,
+  List,
+  ToggleLeft,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,28 +33,28 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
 export interface CustomField {
-  id: string
-  name: string
-  type: "text" | "number" | "date" | "select" | "boolean" | "textarea"
-  required: boolean
-  options?: string[] // For select type
-  defaultValue?: string | number | boolean
+  id: string;
+  name: string;
+  type: "text" | "number" | "date" | "select" | "boolean" | "textarea";
+  required: boolean;
+  options?: string[]; // For select type
+  defaultValue?: string | number | boolean;
 }
 
 export interface CustomFieldValue {
-  fieldId: string
-  value: string | number | boolean
+  fieldId: string;
+  value: string | number | boolean;
 }
 
 interface CustomFieldsFormProps {
-  fields: CustomField[]
-  values: CustomFieldValue[]
-  onFieldsChange: (fields: CustomField[]) => void
-  onValuesChange: (values: CustomFieldValue[]) => void
-  editable?: boolean
+  fields: CustomField[];
+  values: CustomFieldValue[];
+  onFieldsChange: (fields: CustomField[]) => void;
+  onValuesChange: (values: CustomFieldValue[]) => void;
+  editable?: boolean;
 }
 
 export function CustomFieldsForm({
@@ -49,35 +64,35 @@ export function CustomFieldsForm({
   onValuesChange,
   editable = true,
 }: CustomFieldsFormProps) {
-  const [isManaging, setIsManaging] = useState(false)
+  const [isManaging, setIsManaging] = useState(false);
   const [newField, setNewField] = useState<Partial<CustomField>>({
     name: "",
     type: "text",
     required: false,
     options: [],
-  })
+  });
 
   const getFieldIcon = (type: CustomField["type"]) => {
     switch (type) {
       case "text":
-        return <Type className="h-4 w-4" />
+        return <Type className="h-4 w-4" />;
       case "textarea":
-        return <Type className="h-4 w-4" />
+        return <Type className="h-4 w-4" />;
       case "number":
-        return <Hash className="h-4 w-4" />
+        return <Hash className="h-4 w-4" />;
       case "date":
-        return <Calendar className="h-4 w-4" />
+        return <Calendar className="h-4 w-4" />;
       case "select":
-        return <List className="h-4 w-4" />
+        return <List className="h-4 w-4" />;
       case "boolean":
-        return <ToggleLeft className="h-4 w-4" />
+        return <ToggleLeft className="h-4 w-4" />;
       default:
-        return <Type className="h-4 w-4" />
+        return <Type className="h-4 w-4" />;
     }
-  }
+  };
 
   const addField = () => {
-    if (!newField.name) return
+    if (!newField.name) return;
 
     const field: CustomField = {
       id: `field-${Date.now()}`,
@@ -86,37 +101,40 @@ export function CustomFieldsForm({
       required: newField.required || false,
       options: newField.options || [],
       defaultValue: newField.defaultValue,
-    }
+    };
 
-    onFieldsChange([...fields, field])
-    setNewField({ name: "", type: "text", required: false, options: [] })
-  }
+    onFieldsChange([...fields, field]);
+    setNewField({ name: "", type: "text", required: false, options: [] });
+  };
 
   const removeField = (fieldId: string) => {
-    onFieldsChange(fields.filter((f) => f.id !== fieldId))
-    onValuesChange(values.filter((v) => v.fieldId !== fieldId))
-  }
+    onFieldsChange(fields.filter((f) => f.id !== fieldId));
+    onValuesChange(values.filter((v) => v.fieldId !== fieldId));
+  };
 
-  const updateFieldValue = (fieldId: string, value: string | number | boolean) => {
-    const existingIndex = values.findIndex((v) => v.fieldId === fieldId)
-    const newValues = [...values]
+  const updateFieldValue = (
+    fieldId: string,
+    value: string | number | boolean,
+  ) => {
+    const existingIndex = values.findIndex((v) => v.fieldId === fieldId);
+    const newValues = [...values];
 
     if (existingIndex >= 0) {
-      newValues[existingIndex] = { fieldId, value }
+      newValues[existingIndex] = { fieldId, value };
     } else {
-      newValues.push({ fieldId, value })
+      newValues.push({ fieldId, value });
     }
 
-    onValuesChange(newValues)
-  }
+    onValuesChange(newValues);
+  };
 
   const getFieldValue = (fieldId: string) => {
-    const fieldValue = values.find((v) => v.fieldId === fieldId)
-    return fieldValue?.value
-  }
+    const fieldValue = values.find((v) => v.fieldId === fieldId);
+    return fieldValue?.value;
+  };
 
   const renderFieldInput = (field: CustomField) => {
-    const value = getFieldValue(field.id)
+    const value = getFieldValue(field.id);
 
     switch (field.type) {
       case "text":
@@ -127,7 +145,7 @@ export function CustomFieldsForm({
             placeholder={`Enter ${field.name.toLowerCase()}`}
             disabled={!editable}
           />
-        )
+        );
 
       case "textarea":
         return (
@@ -138,18 +156,20 @@ export function CustomFieldsForm({
             disabled={!editable}
             rows={3}
           />
-        )
+        );
 
       case "number":
         return (
           <Input
             type="number"
             value={(value as number) || ""}
-            onChange={(e) => updateFieldValue(field.id, Number.parseFloat(e.target.value) || 0)}
+            onChange={(e) =>
+              updateFieldValue(field.id, Number.parseFloat(e.target.value) || 0)
+            }
             placeholder={`Enter ${field.name.toLowerCase()}`}
             disabled={!editable}
           />
-        )
+        );
 
       case "date":
         return (
@@ -159,7 +179,7 @@ export function CustomFieldsForm({
             onChange={(e) => updateFieldValue(field.id, e.target.value)}
             disabled={!editable}
           />
-        )
+        );
 
       case "select":
         return (
@@ -179,7 +199,7 @@ export function CustomFieldsForm({
               ))}
             </SelectContent>
           </Select>
-        )
+        );
 
       case "boolean":
         return (
@@ -191,15 +211,15 @@ export function CustomFieldsForm({
             />
             <Label>{value ? "Yes" : "No"}</Label>
           </div>
-        )
+        );
 
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   if (fields.length === 0 && !editable) {
-    return null
+    return null;
   }
 
   return (
@@ -221,7 +241,9 @@ export function CustomFieldsForm({
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                   <DialogTitle>Manage Custom Fields</DialogTitle>
-                  <DialogDescription>Add, edit, or remove custom fields for tasks.</DialogDescription>
+                  <DialogDescription>
+                    Add, edit, or remove custom fields for tasks.
+                  </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4">
@@ -230,7 +252,10 @@ export function CustomFieldsForm({
                     <div className="space-y-2">
                       <Label>Existing Fields</Label>
                       {fields.map((field) => (
-                        <div key={field.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div
+                          key={field.id}
+                          className="flex items-center justify-between p-3 border rounded-lg"
+                        >
                           <div className="flex items-center gap-2">
                             {getFieldIcon(field.type)}
                             <span className="font-medium">{field.name}</span>
@@ -241,7 +266,11 @@ export function CustomFieldsForm({
                               </Badge>
                             )}
                           </div>
-                          <Button variant="ghost" size="sm" onClick={() => removeField(field.id)}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeField(field.id)}
+                          >
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
@@ -258,7 +287,9 @@ export function CustomFieldsForm({
                         <Label className="text-xs">Field Name</Label>
                         <Input
                           value={newField.name || ""}
-                          onChange={(e) => setNewField({ ...newField, name: e.target.value })}
+                          onChange={(e) =>
+                            setNewField({ ...newField, name: e.target.value })
+                          }
                           placeholder="Field name"
                         />
                       </div>
@@ -266,7 +297,9 @@ export function CustomFieldsForm({
                         <Label className="text-xs">Type</Label>
                         <Select
                           value={newField.type || "text"}
-                          onValueChange={(type: CustomField["type"]) => setNewField({ ...newField, type })}
+                          onValueChange={(type: CustomField["type"]) =>
+                            setNewField({ ...newField, type })
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -285,7 +318,9 @@ export function CustomFieldsForm({
 
                     {newField.type === "select" && (
                       <div>
-                        <Label className="text-xs">Options (comma-separated)</Label>
+                        <Label className="text-xs">
+                          Options (comma-separated)
+                        </Label>
                         <Input
                           value={newField.options?.join(", ") || ""}
                           onChange={(e) =>
@@ -306,11 +341,17 @@ export function CustomFieldsForm({
                       <div className="flex items-center space-x-2">
                         <Switch
                           checked={newField.required || false}
-                          onCheckedChange={(required) => setNewField({ ...newField, required })}
+                          onCheckedChange={(required) =>
+                            setNewField({ ...newField, required })
+                          }
                         />
                         <Label className="text-xs">Required field</Label>
                       </div>
-                      <Button onClick={addField} size="sm" disabled={!newField.name}>
+                      <Button
+                        onClick={addField}
+                        size="sm"
+                        disabled={!newField.name}
+                      >
                         <Plus className="h-4 w-4 mr-1" />
                         Add Field
                       </Button>
@@ -342,7 +383,7 @@ export function CustomFieldsForm({
         </CardContent>
       )}
     </Card>
-  )
+  );
 }
 
 // Hook to manage custom fields
@@ -367,14 +408,14 @@ export function useCustomFields() {
       type: "boolean",
       required: false,
     },
-  ])
+  ]);
 
-  const [values, setValues] = useState<CustomFieldValue[]>([])
+  const [values, setValues] = useState<CustomFieldValue[]>([]);
 
   return {
     fields,
     values,
     setFields,
     setValues,
-  }
+  };
 }

@@ -77,8 +77,6 @@ export interface CreateProjectRequest {
   status: ProjectStatus;
   difficulty: ProjectDifficulty;
   teamMemberIds: string[];
-  start_date?: string;
-  end_date?: string;
 }
 
 // Sprint Types

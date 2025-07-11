@@ -13,9 +13,6 @@ import {
   type TaskStatus,
 } from "@/lib/stores/sprint-store";
 import { Search, Filter } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/lib/stores/auth-store";
 
 export default function KanbanPage() {
   const { tasks, addTask, updateTask, deleteTask, setTasks } = useSprintStore();
@@ -24,24 +21,8 @@ export default function KanbanPage() {
   const [initialStatus, setInitialStatus] = useState<TaskStatus>("To Do");
   const [editingTask, setEditingTask] = useState<Task | undefined>();
 
-  const { isAuthenticated, checkAuth } = useAuthStore();
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const router = useRouter();
-
-  // ✅ Cek autentikasi saat mount
   useEffect(() => {
-    checkAuth().finally(() => setIsAuthChecked(true));
-  }, [checkAuth]);
-
-  // ✅ Redirect jika tidak login
-  useEffect(() => {
-    if (isAuthChecked && !isAuthenticated) {
-      router.push("/auth/login");
-    }
-  }, [isAuthChecked, isAuthenticated, router]);
-
-  // ✅ Load mock data (bisa diganti API)
-  useEffect(() => {
+    // Mock data - replace with actual API call
     const mockTasks: Task[] = [
       {
         id: "1",
@@ -102,10 +83,6 @@ export default function KanbanPage() {
     }
   }, [tasks.length, setTasks]);
 
-  // ❌ Jangan render apapun sebelum auth check selesai
-  if (!isAuthChecked) return null;
-
-  // 🔧 Handler task
   const handleCreateTask = (status: TaskStatus) => {
     setInitialStatus(status);
     setEditingTask(undefined);
@@ -118,7 +95,7 @@ export default function KanbanPage() {
   };
 
   const handleSubmitTask = (
-    taskData: Omit<Task, "id" | "createdAt" | "updatedAt">
+    taskData: Omit<Task, "id" | "createdAt" | "updatedAt">,
   ) => {
     if (editingTask) {
       updateTask(editingTask.id, {
@@ -145,7 +122,7 @@ export default function KanbanPage() {
   const filteredTasks = tasks.filter(
     (task) =>
       task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchTerm.toLowerCase())
+      task.description.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (

@@ -1,13 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { NotificationBell } from "@/components/ui/notification-bell"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { NotificationBell } from "@/components/ui/notification-bell";
+import { LogoutButton } from "@/components/ui/logout-button";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -15,7 +16,6 @@ import {
   BarChart3,
   Users,
   Settings,
-  LogOut,
   ChevronLeft,
   ChevronRight,
   Target,
@@ -27,38 +27,40 @@ import {
   Activity,
   Search,
   Zap,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useAuthStore } from "@/lib/stores/auth-store"
+  Shield,
+  Eye,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "My Work", href: "/my-work", icon: Target },
   { name: "Projects", href: "/projects", icon: FolderKanban },
   { name: "Kanban", href: "/kanban", icon: FolderKanban },
-  { name: "Sprints", href: "/sprints", icon: Target },
+  { name: "Sprints", href: "/sprints", icon: Zap },
   { name: "Calendar", href: "/calendar", icon: Calendar },
   { name: "Reports", href: "/reports", icon: BarChart3 },
   { name: "Chat", href: "/chat", icon: MessageSquare, badge: "3" },
   { name: "Templates", href: "/templates", icon: FileTemplate },
   { name: "Tags", href: "/tags", icon: Tag },
   { name: "Activity", href: "/activity", icon: Activity },
-  { name: "Audit Log", href: "/audit-log", icon: Clock },
-  { name: "Retrospective", href: "/retrospective", icon: MessageSquare },
-]
+  { name: "Retrospective", href: "/retrospective", icon: Clock },
+];
 
 const adminNavigation = [
   { name: "Team", href: "/dashboard/team", icon: Users },
   { name: "Roles", href: "/dashboard/roles", icon: Settings },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
-]
+  { name: "Audit Log", href: "/audit-log", icon: Shield },
+  { name: "Public Projects", href: "/project/public", icon: Eye },
+];
 
 export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false)
-  const pathname = usePathname()
-  const { user, logout } = useAuthStore()
+  const [collapsed, setCollapsed] = useState(false);
+  const pathname = usePathname();
+  const { user } = useAuthStore();
 
-  const isAdmin = user?.role === "Admin"
+  const isAdmin = user?.role === "Admin";
 
   return (
     <div
@@ -71,14 +73,25 @@ export function Sidebar() {
       <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-navy-600 rounded-lg">
+            <div className="p-1.5 bg-blue-600 rounded-lg">
               <Zap className="h-5 w-5 text-white" />
             </div>
-            <span className="font-bold text-navy-900 dark:text-navy-100">SprintFlow</span>
+            <span className="font-bold text-slate-900 dark:text-slate-100">
+              SprintFlow
+            </span>
           </div>
         )}
-        <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="h-8 w-8">
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setCollapsed(!collapsed)}
+          className="h-8 w-8"
+        >
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
         </Button>
       </div>
 
@@ -86,14 +99,18 @@ export function Sidebar() {
       <div className="p-4 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-navy-100 text-navy-700 dark:bg-navy-800 dark:text-navy-300">
+            <AvatarFallback className="bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300">
               {user?.name?.charAt(0).toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
           {!collapsed && (
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">{user?.name || "User"}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user?.role || "Member"}</p>
+              <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+                {user?.name || "User"}
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                {user?.role || "Member"}
+              </p>
             </div>
           )}
         </div>
@@ -115,7 +132,7 @@ export function Sidebar() {
 
         <div className="pt-2">
           {navigation.map((item) => {
-            const isActive = pathname === item.href
+            const isActive = pathname === item.href;
             return (
               <Link key={item.name} href={item.href}>
                 <Button
@@ -124,7 +141,7 @@ export function Sidebar() {
                     "w-full justify-start mb-1",
                     collapsed ? "px-2" : "px-3",
                     isActive
-                      ? "bg-navy-100 text-navy-900 dark:bg-navy-800 dark:text-navy-100"
+                      ? "bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100",
                   )}
                 >
@@ -144,7 +161,7 @@ export function Sidebar() {
                   )}
                 </Button>
               </Link>
-            )
+            );
           })}
         </div>
 
@@ -157,7 +174,7 @@ export function Sidebar() {
               </p>
             )}
             {adminNavigation.map((item) => {
-              const isActive = pathname === item.href
+              const isActive = pathname === item.href;
               return (
                 <Link key={item.name} href={item.href}>
                   <Button
@@ -166,7 +183,7 @@ export function Sidebar() {
                       "w-full justify-start mb-1",
                       collapsed ? "px-2" : "px-3",
                       isActive
-                        ? "bg-navy-100 text-navy-900 dark:bg-navy-800 dark:text-navy-100"
+                        ? "bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100",
                     )}
                   >
@@ -174,7 +191,7 @@ export function Sidebar() {
                     {!collapsed && <span className="ml-3">{item.name}</span>}
                   </Button>
                 </Link>
-              )
+              );
             })}
           </div>
         )}
@@ -192,18 +209,15 @@ export function Sidebar() {
           )}
         </div>
 
-        <Button
+        <LogoutButton
           variant="ghost"
-          onClick={logout}
           className={cn(
             "w-full justify-start text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400",
             collapsed ? "px-2" : "px-3",
           )}
-        >
-          <LogOut className="h-4 w-4" />
-          {!collapsed && <span className="ml-3">Sign Out</span>}
-        </Button>
+          showConfirmDialog={true}
+        />
       </div>
     </div>
-  )
+  );
 }

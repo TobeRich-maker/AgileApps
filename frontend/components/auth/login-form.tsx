@@ -18,9 +18,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { Loader2, Mail, Lock } from "lucide-react";
 import Link from "next/link";
-import { authApi } from "@/lib/api/auth";
 
 export function LoginForm() {
+  console.log("🔥 LoginForm file loaded");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -31,27 +31,34 @@ export function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setIsLoading(true);
     setError("");
-
     try {
-      const result = await authApi.login({ email, password });
+      const response = await fetch("http://localhost:8000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: "include",
+      });
 
-      // Tambahkan log detail dari hasil API:
-      console.log("📦 API Response result:", result);
+      if (!response.ok) {
+        throw new Error("Login gagal");
+      }
 
-      const { user, token } = result;
-
-      // Tambahkan log user & token:
-      console.log("✅ Login successful:");
-      console.log("👤 User:", user);
-      console.log("🔑 Token:", token);
+      const data = await response.json();
+      const { token, user } = data;
 
       login(user, token);
       router.push("/dashboard");
     } catch (err: any) {
-      console.error("❌ Login error:", err);
-      setError("Login gagal. Periksa email dan password.");
+      console.error("Login error:", err);
+      setError("Email atau password salah");
+    } finally {
+      setIsLoading(false);
     }
   };
 

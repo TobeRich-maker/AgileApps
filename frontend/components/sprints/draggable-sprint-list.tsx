@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -9,62 +9,85 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
-} from "@dnd-kit/core"
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable"
-import { useSortable } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import type { Sprint } from "@/lib/types/api"
-import { Calendar, Target, MoreHorizontal, GripVertical } from "lucide-react"
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { Sprint } from "@/lib/types/api";
+import { Calendar, Target, MoreHorizontal, GripVertical } from "lucide-react";
 
 interface SortableSprintCardProps {
-  sprint: Sprint
-  onEdit: (sprint: Sprint) => void
-  onDelete: (id: string) => void
-  onStart: (id: string) => void
-  onComplete: (id: string) => void
+  sprint: Sprint;
+  onEdit: (sprint: Sprint) => void;
+  onDelete: (id: string) => void;
+  onStart: (id: string) => void;
+  onComplete: (id: string) => void;
 }
 
-function SortableSprintCard({ sprint, onEdit, onDelete, onStart, onComplete }: SortableSprintCardProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: sprint.id })
+function SortableSprintCard({
+  sprint,
+  onEdit,
+  onDelete,
+  onStart,
+  onComplete,
+}: SortableSprintCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: sprint.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Active":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "Completed":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       case "Planned":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
-    })
-  }
+    });
+  };
 
   const getDaysRemaining = (endDate: string) => {
-    const end = new Date(endDate)
-    const now = new Date()
-    const diffTime = end.getTime() - now.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays
-  }
+    const end = new Date(endDate);
+    const now = new Date();
+    const diffTime = end.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
 
   return (
     <Card
@@ -75,12 +98,18 @@ function SortableSprintCard({ sprint, onEdit, onDelete, onStart, onComplete }: S
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3 flex-1">
-            <div {...attributes} {...listeners} className="mt-1 cursor-grab active:cursor-grabbing">
+            <div
+              {...attributes}
+              {...listeners}
+              className="mt-1 cursor-grab active:cursor-grabbing"
+            >
               <GripVertical className="h-4 w-4 text-gray-400" />
             </div>
             <div className="flex-1">
               <CardTitle className="text-lg">{sprint.name}</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{sprint.goal}</p>
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                {sprint.goal}
+              </p>
             </div>
           </div>
           <DropdownMenu>
@@ -90,14 +119,23 @@ function SortableSprintCard({ sprint, onEdit, onDelete, onStart, onComplete }: S
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(sprint)}>Edit Sprint</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onEdit(sprint)}>
+                Edit Sprint
+              </DropdownMenuItem>
               {sprint.status === "Planned" && (
-                <DropdownMenuItem onClick={() => onStart(sprint.id)}>Start Sprint</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onStart(sprint.id)}>
+                  Start Sprint
+                </DropdownMenuItem>
               )}
               {sprint.status === "Active" && (
-                <DropdownMenuItem onClick={() => onComplete(sprint.id)}>Complete Sprint</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onComplete(sprint.id)}>
+                  Complete Sprint
+                </DropdownMenuItem>
               )}
-              <DropdownMenuItem onClick={() => onDelete(sprint.id)} className="text-red-600">
+              <DropdownMenuItem
+                onClick={() => onDelete(sprint.id)}
+                className="text-red-600"
+              >
                 Delete Sprint
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -107,7 +145,9 @@ function SortableSprintCard({ sprint, onEdit, onDelete, onStart, onComplete }: S
       <CardContent className="pt-0">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <Badge className={getStatusColor(sprint.status)}>{sprint.status}</Badge>
+            <Badge className={getStatusColor(sprint.status)}>
+              {sprint.status}
+            </Badge>
             {sprint.status === "Active" && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
@@ -123,7 +163,10 @@ function SortableSprintCard({ sprint, onEdit, onDelete, onStart, onComplete }: S
                 {sprint.completedPoints}/{sprint.storyPoints} points
               </span>
             </div>
-            <Progress value={(sprint.completedPoints / sprint.storyPoints) * 100} className="h-2" />
+            <Progress
+              value={(sprint.completedPoints / sprint.storyPoints) * 100}
+              className="h-2"
+            />
           </div>
 
           <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -138,16 +181,16 @@ function SortableSprintCard({ sprint, onEdit, onDelete, onStart, onComplete }: S
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 interface DraggableSprintListProps {
-  sprints: Sprint[]
-  onReorder: (sprints: Sprint[]) => void
-  onEdit: (sprint: Sprint) => void
-  onDelete: (id: string) => void
-  onStart: (id: string) => void
-  onComplete: (id: string) => void
+  sprints: Sprint[];
+  onReorder: (sprints: Sprint[]) => void;
+  onEdit: (sprint: Sprint) => void;
+  onDelete: (id: string) => void;
+  onStart: (id: string) => void;
+  onComplete: (id: string) => void;
 }
 
 export function DraggableSprintList({
@@ -158,35 +201,44 @@ export function DraggableSprintList({
   onStart,
   onComplete,
 }: DraggableSprintListProps) {
-  const [items, setItems] = useState(sprints)
+  const [items, setItems] = useState(sprints);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
-  )
+  );
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
+    const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = items.findIndex((item) => item.id === active.id)
-      const newIndex = items.findIndex((item) => item.id === over.id)
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
 
-      const newItems = arrayMove(items, oldIndex, newIndex).map((item, index) => ({
-        ...item,
-        order: index,
-      }))
+      const newItems = arrayMove(items, oldIndex, newIndex).map(
+        (item, index) => ({
+          ...item,
+          order: index,
+        }),
+      );
 
-      setItems(newItems)
-      onReorder(newItems)
+      setItems(newItems);
+      onReorder(newItems);
     }
-  }
+  };
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext
+        items={items.map((item) => item.id)}
+        strategy={verticalListSortingStrategy}
+      >
         <div className="space-y-4">
           {items.map((sprint) => (
             <SortableSprintCard
@@ -201,5 +253,5 @@ export function DraggableSprintList({
         </div>
       </SortableContext>
     </DndContext>
-  )
+  );
 }

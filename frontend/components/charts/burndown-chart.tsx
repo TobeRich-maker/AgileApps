@@ -1,15 +1,23 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-import { BarChart3 } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { BarChart3 } from "lucide-react";
 
 interface BurndownChartProps {
   data: Array<{
-    day: string
-    ideal: number
-    actual: number
-  }>
+    day: string;
+    ideal: number;
+    actual: number;
+  }>;
 }
 
 export function BurndownChart({ data }: BurndownChartProps) {
@@ -28,11 +36,23 @@ export function BurndownChart({ data }: BurndownChartProps) {
             <XAxis dataKey="day" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="ideal" stroke="#94a3b8" strokeDasharray="5 5" name="Ideal" />
-            <Line type="monotone" dataKey="actual" stroke="#dc2626" strokeWidth={2} name="Actual" />
+            <Line
+              type="monotone"
+              dataKey="ideal"
+              stroke="#94a3b8"
+              strokeDasharray="5 5"
+              name="Ideal"
+            />
+            <Line
+              type="monotone"
+              dataKey="actual"
+              stroke="#dc2626"
+              strokeWidth={2}
+              name="Actual"
+            />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

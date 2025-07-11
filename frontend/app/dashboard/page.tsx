@@ -1,9 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/lib/stores/auth-store";
-
+import { useState } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { SprintProgress } from "@/components/dashboard/sprint-progress";
@@ -15,21 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3 } from "lucide-react";
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const { isAuthenticated, isAuthChecked, checkAuth } = useAuthStore();
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
-  useEffect(() => {
-    if (isAuthChecked && !isAuthenticated) {
-      router.push("/login");
-    }
-  }, [isAuthChecked, isAuthenticated, router]);
-
-  // Data dummy sementara
-  const [stats] = useState({
+  const [stats, setStats] = useState({
     totalProjects: 12,
     activeSprints: 3,
     completedTasks: 47,
@@ -79,9 +62,6 @@ export default function DashboardPage() {
     { sprint: "Sprint 22", planned: 32, completed: 29 },
     { sprint: "Sprint 23", planned: 35, completed: 33 },
   ]);
-
-  // Tampilkan halaman kosong sementara nunggu checkAuth selesai
-  if (!isAuthChecked) return null;
 
   return (
     <MainLayout>

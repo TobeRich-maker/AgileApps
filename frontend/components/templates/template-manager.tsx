@@ -1,14 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   FileIcon as FileTemplate,
   Plus,
@@ -22,7 +28,7 @@ import {
   FolderOpen,
   Calendar,
   CheckSquare,
-} from "lucide-react"
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -30,43 +36,48 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Template {
-  id: string
-  name: string
-  description: string
-  type: "project" | "sprint" | "task"
-  category: string
+  id: string;
+  name: string;
+  description: string;
+  type: "project" | "sprint" | "task";
+  category: string;
   author: {
-    name: string
-    avatar?: string
-  }
-  createdAt: string
-  usageCount: number
-  isStarred: boolean
-  tags: string[]
+    name: string;
+    avatar?: string;
+  };
+  createdAt: string;
+  usageCount: number;
+  isStarred: boolean;
+  tags: string[];
   content: {
     // Project template
-    projectName?: string
-    projectDescription?: string
-    difficulty?: string
-    estimatedDuration?: string
-    teamSize?: number
+    projectName?: string;
+    projectDescription?: string;
+    difficulty?: string;
+    estimatedDuration?: string;
+    teamSize?: number;
 
     // Sprint template
-    sprintDuration?: number
-    sprintGoals?: string[]
-    ceremonies?: string[]
+    sprintDuration?: number;
+    sprintGoals?: string[];
+    ceremonies?: string[];
 
     // Task template
-    taskTitle?: string
-    taskDescription?: string
-    acceptanceCriteria?: string[]
-    estimatedHours?: number
-    priority?: string
-  }
+    taskTitle?: string;
+    taskDescription?: string;
+    acceptanceCriteria?: string[];
+    estimatedHours?: number;
+    priority?: string;
+  };
 }
 
 // Mock templates
@@ -74,7 +85,8 @@ const mockTemplates: Template[] = [
   {
     id: "1",
     name: "E-commerce Project Setup",
-    description: "Complete template for setting up an e-commerce project with all necessary components",
+    description:
+      "Complete template for setting up an e-commerce project with all necessary components",
     type: "project",
     category: "Web Development",
     author: { name: "John Doe" },
@@ -104,8 +116,17 @@ const mockTemplates: Template[] = [
     tags: ["agile", "scrum", "sprint"],
     content: {
       sprintDuration: 14,
-      sprintGoals: ["Complete user authentication module", "Implement basic product catalog", "Set up CI/CD pipeline"],
-      ceremonies: ["Sprint Planning", "Daily Standups", "Sprint Review", "Retrospective"],
+      sprintGoals: [
+        "Complete user authentication module",
+        "Implement basic product catalog",
+        "Set up CI/CD pipeline",
+      ],
+      ceremonies: [
+        "Sprint Planning",
+        "Daily Standups",
+        "Sprint Review",
+        "Retrospective",
+      ],
     },
   },
   {
@@ -121,7 +142,8 @@ const mockTemplates: Template[] = [
     tags: ["user-story", "requirements", "agile"],
     content: {
       taskTitle: "As a [user type], I want [functionality] so that [benefit]",
-      taskDescription: "Detailed description of the user story including context and background information.",
+      taskDescription:
+        "Detailed description of the user story including context and background information.",
       acceptanceCriteria: [
         "Given [context], when [action], then [outcome]",
         "The feature should be accessible on mobile devices",
@@ -155,15 +177,19 @@ const mockTemplates: Template[] = [
       priority: "High",
     },
   },
-]
+];
 
 export function TemplateManager() {
-  const [templates, setTemplates] = useState<Template[]>(mockTemplates)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filterType, setFilterType] = useState<"all" | "project" | "sprint" | "task">("all")
-  const [filterCategory, setFilterCategory] = useState<string>("all")
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null)
+  const [templates, setTemplates] = useState<Template[]>(mockTemplates);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState<
+    "all" | "project" | "sprint" | "task"
+  >("all");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
+    null,
+  );
   const [newTemplate, setNewTemplate] = useState<Partial<Template>>({
     name: "",
     description: "",
@@ -171,21 +197,29 @@ export function TemplateManager() {
     category: "",
     tags: [],
     content: {},
-  })
+  });
 
   const useTemplate = (template: Template) => {
     // Increment usage count
-    setTemplates((prev) => prev.map((t) => (t.id === template.id ? { ...t, usageCount: t.usageCount + 1 } : t)))
+    setTemplates((prev) =>
+      prev.map((t) =>
+        t.id === template.id ? { ...t, usageCount: t.usageCount + 1 } : t,
+      ),
+    );
 
     // Here you would typically navigate to create form with template data
-    console.log("Using template:", template)
-  }
+    console.log("Using template:", template);
+  };
 
   const toggleStar = (templateId: string) => {
     setTemplates((prev) =>
-      prev.map((template) => (template.id === templateId ? { ...template, isStarred: !template.isStarred } : template)),
-    )
-  }
+      prev.map((template) =>
+        template.id === templateId
+          ? { ...template, isStarred: !template.isStarred }
+          : template,
+      ),
+    );
+  };
 
   const duplicateTemplate = (template: Template) => {
     const newTemplate: Template = {
@@ -195,73 +229,83 @@ export function TemplateManager() {
       usageCount: 0,
       isStarred: false,
       createdAt: new Date().toISOString().split("T")[0],
-    }
-    setTemplates((prev) => [newTemplate, ...prev])
-  }
+    };
+    setTemplates((prev) => [newTemplate, ...prev]);
+  };
 
   const deleteTemplate = (templateId: string) => {
-    setTemplates((prev) => prev.filter((t) => t.id !== templateId))
-  }
+    setTemplates((prev) => prev.filter((t) => t.id !== templateId));
+  };
 
   const getTypeIcon = (type: Template["type"]) => {
     switch (type) {
       case "project":
-        return <FolderOpen className="h-4 w-4" />
+        return <FolderOpen className="h-4 w-4" />;
       case "sprint":
-        return <Calendar className="h-4 w-4" />
+        return <Calendar className="h-4 w-4" />;
       case "task":
-        return <CheckSquare className="h-4 w-4" />
+        return <CheckSquare className="h-4 w-4" />;
     }
-  }
+  };
 
   const getTypeColor = (type: Template["type"]) => {
     switch (type) {
       case "project":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
       case "sprint":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
       case "task":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
     }
-  }
+  };
 
   // Filter templates
   const filteredTemplates = templates.filter((template) => {
     const matchesSearch =
       template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       template.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      template.tags.some((tag) =>
+        tag.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
 
-    const matchesType = filterType === "all" || template.type === filterType
-    const matchesCategory = filterCategory === "all" || template.category === filterCategory
+    const matchesType = filterType === "all" || template.type === filterType;
+    const matchesCategory =
+      filterCategory === "all" || template.category === filterCategory;
 
-    return matchesSearch && matchesType && matchesCategory
-  })
+    return matchesSearch && matchesType && matchesCategory;
+  });
 
   // Get unique categories
-  const categories = Array.from(new Set(templates.map((t) => t.category)))
+  const categories = Array.from(new Set(templates.map((t) => t.category)));
 
   const handleUseTemplate = (template: Template) => {
-    useTemplate(template)
-  }
+    useTemplate(template);
+  };
 
   const handleDuplicateTemplate = (template: Template) => {
-    duplicateTemplate(template)
-  }
+    duplicateTemplate(template);
+  };
 
   const handleDeleteTemplate = (templateId: string) => {
-    deleteTemplate(templateId)
-  }
+    deleteTemplate(templateId);
+  };
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-navy-900 dark:text-navy-100">Templates</h1>
-          <p className="text-slate-600 dark:text-slate-400">Reusable templates for projects, sprints, and tasks</p>
+          <h1 className="text-3xl font-bold text-navy-900 dark:text-navy-100">
+            Templates
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400">
+            Reusable templates for projects, sprints, and tasks
+          </p>
         </div>
-        <Button className="bg-navy-600 hover:bg-navy-700" onClick={() => setIsCreateDialogOpen(true)}>
+        <Button
+          className="bg-navy-600 hover:bg-navy-700"
+          onClick={() => setIsCreateDialogOpen(true)}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Create Template
         </Button>
@@ -272,7 +316,9 @@ export function TemplateManager() {
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Create New Template</DialogTitle>
-            <DialogDescription>Create a reusable template for projects, sprints, or tasks.</DialogDescription>
+            <DialogDescription>
+              Create a reusable template for projects, sprints, or tasks.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -280,7 +326,9 @@ export function TemplateManager() {
                 <Label>Template Name</Label>
                 <Input
                   value={newTemplate.name || ""}
-                  onChange={(e) => setNewTemplate({ ...newTemplate, name: e.target.value })}
+                  onChange={(e) =>
+                    setNewTemplate({ ...newTemplate, name: e.target.value })
+                  }
                   placeholder="Enter template name"
                 />
               </div>
@@ -288,7 +336,9 @@ export function TemplateManager() {
                 <Label>Type</Label>
                 <Select
                   value={newTemplate.type || "task"}
-                  onValueChange={(type: Template["type"]) => setNewTemplate({ ...newTemplate, type })}
+                  onValueChange={(type: Template["type"]) =>
+                    setNewTemplate({ ...newTemplate, type })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -306,7 +356,12 @@ export function TemplateManager() {
               <Label>Description</Label>
               <Textarea
                 value={newTemplate.description || ""}
-                onChange={(e) => setNewTemplate({ ...newTemplate, description: e.target.value })}
+                onChange={(e) =>
+                  setNewTemplate({
+                    ...newTemplate,
+                    description: e.target.value,
+                  })
+                }
                 placeholder="Describe what this template is for"
                 rows={3}
               />
@@ -316,16 +371,23 @@ export function TemplateManager() {
               <Label>Category</Label>
               <Input
                 value={newTemplate.category || ""}
-                onChange={(e) => setNewTemplate({ ...newTemplate, category: e.target.value })}
+                onChange={(e) =>
+                  setNewTemplate({ ...newTemplate, category: e.target.value })
+                }
                 placeholder="e.g., Web Development, Mobile, Testing"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsCreateDialogOpen(false)}
+            >
               Cancel
             </Button>
-            <Button onClick={() => setIsCreateDialogOpen(false)}>Create Template</Button>
+            <Button onClick={() => setIsCreateDialogOpen(false)}>
+              Create Template
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -347,7 +409,12 @@ export function TemplateManager() {
             </div>
 
             <div className="flex gap-2">
-              <Select value={filterType} onValueChange={(value: typeof filterType) => setFilterType(value)}>
+              <Select
+                value={filterType}
+                onValueChange={(value: typeof filterType) =>
+                  setFilterType(value)
+                }
+              >
                 <SelectTrigger className="w-32">
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue />
@@ -386,10 +453,17 @@ export function TemplateManager() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   {getTypeIcon(template.type)}
-                  <Badge className={getTypeColor(template.type)}>{template.type}</Badge>
+                  <Badge className={getTypeColor(template.type)}>
+                    {template.type}
+                  </Badge>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => toggleStar(template.id)} className="h-8 w-8">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => toggleStar(template.id)}
+                    className="h-8 w-8"
+                  >
                     {template.isStarred ? (
                       <Star className="h-4 w-4 text-yellow-500 fill-current" />
                     ) : (
@@ -403,19 +477,28 @@ export function TemplateManager() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleUseTemplate(template)}>
+                      <DropdownMenuItem
+                        onClick={() => handleUseTemplate(template)}
+                      >
                         <Copy className="h-4 w-4 mr-2" />
                         Use Template
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDuplicateTemplate(template)}>
+                      <DropdownMenuItem
+                        onClick={() => handleDuplicateTemplate(template)}
+                      >
                         <Copy className="h-4 w-4 mr-2" />
                         Duplicate
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setSelectedTemplate(template)}>
+                      <DropdownMenuItem
+                        onClick={() => setSelectedTemplate(template)}
+                      >
                         <Edit className="h-4 w-4 mr-2" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDeleteTemplate(template.id)} className="text-red-600">
+                      <DropdownMenuItem
+                        onClick={() => handleDeleteTemplate(template.id)}
+                        className="text-red-600"
+                      >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete
                       </DropdownMenuItem>
@@ -426,27 +509,39 @@ export function TemplateManager() {
 
               <div>
                 <CardTitle className="text-lg">{template.name}</CardTitle>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{template.description}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  {template.description}
+                </p>
               </div>
             </CardHeader>
 
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Category</span>
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Category
+                  </span>
                   <Badge variant="outline">{template.category}</Badge>
                 </div>
 
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Used</span>
-                  <span className="font-medium">{template.usageCount} times</span>
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Used
+                  </span>
+                  <span className="font-medium">
+                    {template.usageCount} times
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Avatar className="h-6 w-6">
-                    <AvatarFallback className="text-xs">{template.author.name.charAt(0).toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className="text-xs">
+                      {template.author.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">{template.author.name}</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    {template.author.name}
+                  </span>
                   <span className="text-xs text-slate-500 dark:text-slate-400 ml-auto">
                     {new Date(template.createdAt).toLocaleDateString()}
                   </span>
@@ -467,7 +562,10 @@ export function TemplateManager() {
                   </div>
                 )}
 
-                <Button onClick={() => handleUseTemplate(template)} className="w-full bg-navy-600 hover:bg-navy-700">
+                <Button
+                  onClick={() => handleUseTemplate(template)}
+                  className="w-full bg-navy-600 hover:bg-navy-700"
+                >
                   Use Template
                 </Button>
               </div>
@@ -481,12 +579,16 @@ export function TemplateManager() {
           <div className="mx-auto w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
             <FileTemplate className="h-12 w-12 text-slate-400" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">No templates found</h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+            No templates found
+          </h3>
           <p className="text-slate-600 dark:text-slate-400">
-            {searchQuery ? "Try adjusting your search or filters" : "Create your first template to get started"}
+            {searchQuery
+              ? "Try adjusting your search or filters"
+              : "Create your first template to get started"}
           </p>
         </div>
       )}
     </div>
-  )
+  );
 }

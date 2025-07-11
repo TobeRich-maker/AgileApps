@@ -1,44 +1,70 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { MainLayout } from "@/components/layout/main-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, ThumbsUp, ThumbsDown, Lightbulb, Heart, Smile, Frown, MoreHorizontal } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useState } from "react";
+import { MainLayout } from "@/components/layout/main-layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Plus,
+  ThumbsUp,
+  ThumbsDown,
+  Lightbulb,
+  Heart,
+  Smile,
+  Frown,
+  MoreHorizontal,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface FeedbackItem {
-  id: string
-  content: string
-  author: string
-  authorId: string
-  category: "went_well" | "went_wrong" | "suggestions"
-  createdAt: string
+  id: string;
+  content: string;
+  author: string;
+  authorId: string;
+  category: "went_well" | "went_wrong" | "suggestions";
+  createdAt: string;
   reactions: {
-    thumbsUp: number
-    heart: number
-    smile: number
-    frown: number
-  }
-  userReactions: string[]
+    thumbsUp: number;
+    heart: number;
+    smile: number;
+    frown: number;
+  };
+  userReactions: string[];
 }
 
 interface Sprint {
-  id: string
-  name: string
-  status: string
+  id: string;
+  name: string;
+  status: string;
 }
 
 const mockSprints: Sprint[] = [
   { id: "1", name: "Sprint 23", status: "Completed" },
   { id: "2", name: "Sprint 22", status: "Completed" },
   { id: "3", name: "Sprint 21", status: "Completed" },
-]
+];
 
 const mockFeedback: FeedbackItem[] = [
   {
@@ -71,16 +97,16 @@ const mockFeedback: FeedbackItem[] = [
     reactions: { thumbsUp: 4, heart: 1, smile: 2, frown: 0 },
     userReactions: ["heart"],
   },
-]
+];
 
 export default function RetrospectivePage() {
-  const [selectedSprint, setSelectedSprint] = useState("1")
-  const [feedback, setFeedback] = useState<FeedbackItem[]>(mockFeedback)
-  const [isAddingFeedback, setIsAddingFeedback] = useState(false)
+  const [selectedSprint, setSelectedSprint] = useState("1");
+  const [feedback, setFeedback] = useState<FeedbackItem[]>(mockFeedback);
+  const [isAddingFeedback, setIsAddingFeedback] = useState(false);
   const [newFeedback, setNewFeedback] = useState({
     content: "",
     category: "went_well" as FeedbackItem["category"],
-  })
+  });
 
   const categories = [
     {
@@ -104,17 +130,17 @@ export default function RetrospectivePage() {
       color: "bg-yellow-100 border-yellow-200",
       iconColor: "text-yellow-600",
     },
-  ]
+  ];
 
   const reactionIcons = {
     thumbsUp: ThumbsUp,
     heart: Heart,
     smile: Smile,
     frown: Frown,
-  }
+  };
 
   const handleAddFeedback = () => {
-    if (!newFeedback.content.trim()) return
+    if (!newFeedback.content.trim()) return;
 
     const feedback: FeedbackItem = {
       id: Date.now().toString(),
@@ -125,49 +151,61 @@ export default function RetrospectivePage() {
       createdAt: new Date().toISOString(),
       reactions: { thumbsUp: 0, heart: 0, smile: 0, frown: 0 },
       userReactions: [],
-    }
+    };
 
-    setFeedback((prev) => [...prev, feedback])
-    setNewFeedback({ content: "", category: "went_well" })
-    setIsAddingFeedback(false)
-  }
+    setFeedback((prev) => [...prev, feedback]);
+    setNewFeedback({ content: "", category: "went_well" });
+    setIsAddingFeedback(false);
+  };
 
-  const handleReaction = (feedbackId: string, reactionType: keyof FeedbackItem["reactions"]) => {
+  const handleReaction = (
+    feedbackId: string,
+    reactionType: keyof FeedbackItem["reactions"],
+  ) => {
     setFeedback((prev) =>
       prev.map((item) => {
         if (item.id === feedbackId) {
-          const hasReacted = item.userReactions.includes(reactionType)
+          const hasReacted = item.userReactions.includes(reactionType);
           return {
             ...item,
             reactions: {
               ...item.reactions,
-              [reactionType]: hasReacted ? item.reactions[reactionType] - 1 : item.reactions[reactionType] + 1,
+              [reactionType]: hasReacted
+                ? item.reactions[reactionType] - 1
+                : item.reactions[reactionType] + 1,
             },
             userReactions: hasReacted
               ? item.userReactions.filter((r) => r !== reactionType)
-              : [...item.userReactions.filter((r) => r !== reactionType), reactionType],
-          }
+              : [
+                  ...item.userReactions.filter((r) => r !== reactionType),
+                  reactionType,
+                ],
+          };
         }
-        return item
+        return item;
       }),
-    )
-  }
+    );
+  };
 
   const handleDeleteFeedback = (feedbackId: string) => {
-    setFeedback((prev) => prev.filter((item) => item.id !== feedbackId))
-  }
+    setFeedback((prev) => prev.filter((item) => item.id !== feedbackId));
+  };
 
   const getFeedbackByCategory = (category: FeedbackItem["category"]) => {
-    return feedback.filter((item) => item.category === category)
-  }
+    return feedback.filter((item) => item.category === category);
+  };
 
   return (
     <MainLayout>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Sprint Retrospective</h1>
-            <p className="text-muted-foreground">Reflect on the sprint and gather team feedback.</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Sprint Retrospective
+            </h1>
+            <p className="text-muted-foreground">
+              Reflect on the sprint and gather team feedback.
+            </p>
           </div>
           <div className="flex items-center gap-4">
             <Select value={selectedSprint} onValueChange={setSelectedSprint}>
@@ -219,16 +257,27 @@ export default function RetrospectivePage() {
                     <Textarea
                       id="content"
                       value={newFeedback.content}
-                      onChange={(e) => setNewFeedback((prev) => ({ ...prev, content: e.target.value }))}
+                      onChange={(e) =>
+                        setNewFeedback((prev) => ({
+                          ...prev,
+                          content: e.target.value,
+                        }))
+                      }
                       placeholder="Share your thoughts..."
                       rows={4}
                     />
                   </div>
                   <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setIsAddingFeedback(false)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsAddingFeedback(false)}
+                    >
                       Cancel
                     </Button>
-                    <Button onClick={handleAddFeedback} className="bg-green-600 hover:bg-green-700">
+                    <Button
+                      onClick={handleAddFeedback}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
                       Add Feedback
                     </Button>
                   </div>
@@ -248,31 +297,46 @@ export default function RetrospectivePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {getFeedbackByCategory(category.id as FeedbackItem["category"]).map((item) => (
+                {getFeedbackByCategory(
+                  category.id as FeedbackItem["category"],
+                ).map((item) => (
                   <Card key={item.id} className="bg-white">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <Avatar className="h-6 w-6">
-                            <AvatarFallback className="text-xs">{item.author.charAt(0).toUpperCase()}</AvatarFallback>
+                            <AvatarFallback className="text-xs">
+                              {item.author.charAt(0).toUpperCase()}
+                            </AvatarFallback>
                           </Avatar>
-                          <span className="text-sm font-medium">{item.author}</span>
+                          <span className="text-sm font-medium">
+                            {item.author}
+                          </span>
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                            >
                               <MoreHorizontal className="h-3 w-3" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => handleDeleteFeedback(item.id)} className="text-red-600">
+                            <DropdownMenuItem
+                              onClick={() => handleDeleteFeedback(item.id)}
+                              className="text-red-600"
+                            >
                               Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
 
-                      <p className="text-sm text-gray-700 mb-3">{item.content}</p>
+                      <p className="text-sm text-gray-700 mb-3">
+                        {item.content}
+                      </p>
 
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -282,12 +346,23 @@ export default function RetrospectivePage() {
                               variant="ghost"
                               size="sm"
                               className={`h-6 px-2 ${
-                                item.userReactions.includes(type) ? "bg-blue-100 text-blue-600" : ""
+                                item.userReactions.includes(type)
+                                  ? "bg-blue-100 text-blue-600"
+                                  : ""
                               }`}
-                              onClick={() => handleReaction(item.id, type as keyof FeedbackItem["reactions"])}
+                              onClick={() =>
+                                handleReaction(
+                                  item.id,
+                                  type as keyof FeedbackItem["reactions"],
+                                )
+                              }
                             >
                               <Icon className="h-3 w-3 mr-1" />
-                              {item.reactions[type as keyof FeedbackItem["reactions"]]}
+                              {
+                                item.reactions[
+                                  type as keyof FeedbackItem["reactions"]
+                                ]
+                              }
                             </Button>
                           ))}
                         </div>
@@ -299,9 +374,12 @@ export default function RetrospectivePage() {
                   </Card>
                 ))}
 
-                {getFeedbackByCategory(category.id as FeedbackItem["category"]).length === 0 && (
+                {getFeedbackByCategory(category.id as FeedbackItem["category"])
+                  .length === 0 && (
                   <div className="text-center py-8 text-muted-foreground">
-                    <category.icon className={`h-8 w-8 mx-auto mb-2 ${category.iconColor} opacity-50`} />
+                    <category.icon
+                      className={`h-8 w-8 mx-auto mb-2 ${category.iconColor} opacity-50`}
+                    />
                     <p className="text-sm">No feedback yet</p>
                   </div>
                 )}
@@ -311,5 +389,5 @@ export default function RetrospectivePage() {
         </div>
       </div>
     </MainLayout>
-  )
+  );
 }

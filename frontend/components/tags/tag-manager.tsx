@@ -1,13 +1,28 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tag, Plus, Search, Filter, Edit, Trash2, Hash, Palette } from "lucide-react"
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tag,
+  Plus,
+  Search,
+  Filter,
+  Edit,
+  Trash2,
+  Hash,
+  Palette,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,19 +31,24 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 interface TagData {
-  id: string
-  name: string
-  color: string
-  description?: string
-  category: string
-  usageCount: number
-  createdAt: string
-  createdBy: string
+  id: string;
+  name: string;
+  color: string;
+  description?: string;
+  category: string;
+  usageCount: number;
+  createdAt: string;
+  createdBy: string;
 }
 
 // Mock tags data
@@ -113,7 +133,7 @@ const mockTags: TagData[] = [
     createdAt: "2024-01-01",
     createdBy: "Anna Davis",
   },
-]
+];
 
 const colorOptions = [
   "#3B82F6",
@@ -126,37 +146,38 @@ const colorOptions = [
   "#F97316",
   "#EC4899",
   "#6366F1",
-]
+];
 
 export function TagManager() {
-  const [tags, setTags] = useState<TagData[]>(mockTags)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filterCategory, setFilterCategory] = useState<string>("all")
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [editingTag, setEditingTag] = useState<TagData | null>(null)
+  const [tags, setTags] = useState<TagData[]>(mockTags);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [editingTag, setEditingTag] = useState<TagData | null>(null);
   const [newTag, setNewTag] = useState<Partial<TagData>>({
     name: "",
     color: colorOptions[0],
     description: "",
     category: "Development",
-  })
+  });
 
   // Filter tags
   const filteredTags = tags.filter((tag) => {
     const matchesSearch =
       tag.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tag.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      tag.description?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCategory = filterCategory === "all" || tag.category === filterCategory
+    const matchesCategory =
+      filterCategory === "all" || tag.category === filterCategory;
 
-    return matchesSearch && matchesCategory
-  })
+    return matchesSearch && matchesCategory;
+  });
 
   // Get unique categories
-  const categories = Array.from(new Set(tags.map((t) => t.category)))
+  const categories = Array.from(new Set(tags.map((t) => t.category)));
 
   const createTag = () => {
-    if (!newTag.name) return
+    if (!newTag.name) return;
 
     const tag: TagData = {
       id: Date.now().toString(),
@@ -167,15 +188,20 @@ export function TagManager() {
       usageCount: 0,
       createdAt: new Date().toISOString().split("T")[0],
       createdBy: "Current User",
-    }
+    };
 
-    setTags((prev) => [tag, ...prev])
-    setNewTag({ name: "", color: colorOptions[0], description: "", category: "Development" })
-    setIsCreateDialogOpen(false)
-  }
+    setTags((prev) => [tag, ...prev]);
+    setNewTag({
+      name: "",
+      color: colorOptions[0],
+      description: "",
+      category: "Development",
+    });
+    setIsCreateDialogOpen(false);
+  };
 
   const updateTag = () => {
-    if (!editingTag || !newTag.name) return
+    if (!editingTag || !newTag.name) return;
 
     setTags((prev) =>
       prev.map((tag) =>
@@ -189,62 +215,85 @@ export function TagManager() {
             }
           : tag,
       ),
-    )
+    );
 
-    setEditingTag(null)
-    setNewTag({ name: "", color: colorOptions[0], description: "", category: "Development" })
-  }
+    setEditingTag(null);
+    setNewTag({
+      name: "",
+      color: colorOptions[0],
+      description: "",
+      category: "Development",
+    });
+  };
 
   const deleteTag = (tagId: string) => {
-    setTags((prev) => prev.filter((t) => t.id !== tagId))
-  }
+    setTags((prev) => prev.filter((t) => t.id !== tagId));
+  };
 
   const openEditDialog = (tag: TagData) => {
-    setEditingTag(tag)
+    setEditingTag(tag);
     setNewTag({
       name: tag.name,
       color: tag.color,
       description: tag.description,
       category: tag.category,
-    })
-  }
+    });
+  };
 
   const resetForm = () => {
-    setNewTag({ name: "", color: colorOptions[0], description: "", category: "Development" })
-    setEditingTag(null)
-  }
+    setNewTag({
+      name: "",
+      color: colorOptions[0],
+      description: "",
+      category: "Development",
+    });
+    setEditingTag(null);
+  };
 
   // Sort tags by usage count
-  const sortedTags = [...filteredTags].sort((a, b) => b.usageCount - a.usageCount)
+  const sortedTags = [...filteredTags].sort(
+    (a, b) => b.usageCount - a.usageCount,
+  );
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-navy-900 dark:text-navy-100">Tag Management</h1>
-          <p className="text-slate-600 dark:text-slate-400">Create and manage tags for better task organization</p>
+          <h1 className="text-3xl font-bold text-navy-900 dark:text-navy-100">
+            Tag Management
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400">
+            Create and manage tags for better task organization
+          </p>
         </div>
         <Dialog
           open={isCreateDialogOpen || !!editingTag}
           onOpenChange={(open) => {
             if (!open) {
-              setIsCreateDialogOpen(false)
-              resetForm()
+              setIsCreateDialogOpen(false);
+              resetForm();
             }
           }}
         >
           <DialogTrigger asChild>
-            <Button className="bg-navy-600 hover:bg-navy-700" onClick={() => setIsCreateDialogOpen(true)}>
+            <Button
+              className="bg-navy-600 hover:bg-navy-700"
+              onClick={() => setIsCreateDialogOpen(true)}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Create Tag
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle>{editingTag ? "Edit Tag" : "Create New Tag"}</DialogTitle>
+              <DialogTitle>
+                {editingTag ? "Edit Tag" : "Create New Tag"}
+              </DialogTitle>
               <DialogDescription>
-                {editingTag ? "Update the tag details." : "Create a new tag for organizing tasks."}
+                {editingTag
+                  ? "Update the tag details."
+                  : "Create a new tag for organizing tasks."}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -252,7 +301,9 @@ export function TagManager() {
                 <Label>Tag Name</Label>
                 <Input
                   value={newTag.name || ""}
-                  onChange={(e) => setNewTag({ ...newTag, name: e.target.value })}
+                  onChange={(e) =>
+                    setNewTag({ ...newTag, name: e.target.value })
+                  }
                   placeholder="Enter tag name (e.g., frontend, urgent)"
                 />
               </div>
@@ -280,7 +331,9 @@ export function TagManager() {
                 <Label>Category</Label>
                 <Select
                   value={newTag.category || "Development"}
-                  onValueChange={(category) => setNewTag({ ...newTag, category })}
+                  onValueChange={(category) =>
+                    setNewTag({ ...newTag, category })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -300,7 +353,9 @@ export function TagManager() {
                 <Label>Description (Optional)</Label>
                 <Input
                   value={newTag.description || ""}
-                  onChange={(e) => setNewTag({ ...newTag, description: e.target.value })}
+                  onChange={(e) =>
+                    setNewTag({ ...newTag, description: e.target.value })
+                  }
                   placeholder="Brief description of when to use this tag"
                 />
               </div>
@@ -309,7 +364,9 @@ export function TagManager() {
               <Button variant="outline" onClick={resetForm}>
                 Cancel
               </Button>
-              <Button onClick={editingTag ? updateTag : createTag}>{editingTag ? "Update Tag" : "Create Tag"}</Button>
+              <Button onClick={editingTag ? updateTag : createTag}>
+                {editingTag ? "Update Tag" : "Create Tag"}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -321,8 +378,12 @@ export function TagManager() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Total Tags</p>
-                <p className="text-2xl font-bold text-navy-900 dark:text-navy-100">{tags.length}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Total Tags
+                </p>
+                <p className="text-2xl font-bold text-navy-900 dark:text-navy-100">
+                  {tags.length}
+                </p>
               </div>
               <div className="p-2 bg-navy-100 dark:bg-navy-800 rounded-lg">
                 <Tag className="h-5 w-5 text-navy-600 dark:text-navy-400" />
@@ -335,8 +396,12 @@ export function TagManager() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Categories</p>
-                <p className="text-2xl font-bold text-purple-600">{categories.length}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Categories
+                </p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {categories.length}
+                </p>
               </div>
               <div className="p-2 bg-purple-100 dark:bg-purple-800 rounded-lg">
                 <Hash className="h-5 w-5 text-purple-600 dark:text-purple-400" />
@@ -349,10 +414,14 @@ export function TagManager() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Most Used</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Most Used
+                </p>
                 <p className="text-lg font-bold text-green-600">
                   {tags.length > 0
-                    ? tags.reduce((max, tag) => (tag.usageCount > max.usageCount ? tag : max)).name
+                    ? tags.reduce((max, tag) =>
+                        tag.usageCount > max.usageCount ? tag : max,
+                      ).name
                     : "N/A"}
                 </p>
               </div>
@@ -367,8 +436,12 @@ export function TagManager() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Total Usage</p>
-                <p className="text-2xl font-bold text-blue-600">{tags.reduce((sum, tag) => sum + tag.usageCount, 0)}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Total Usage
+                </p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {tags.reduce((sum, tag) => sum + tag.usageCount, 0)}
+                </p>
               </div>
               <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg">
                 <Tag className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -419,7 +492,10 @@ export function TagManager() {
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: tag.color }} />
+                  <div
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: tag.color }}
+                  />
                   <Badge
                     variant="secondary"
                     className="font-mono text-xs"
@@ -443,7 +519,10 @@ export function TagManager() {
                       <Edit className="h-4 w-4 mr-2" />
                       Edit Tag
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => deleteTag(tag.id)} className="text-red-600">
+                    <DropdownMenuItem
+                      onClick={() => deleteTag(tag.id)}
+                      className="text-red-600"
+                    >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete Tag
                     </DropdownMenuItem>
@@ -451,21 +530,31 @@ export function TagManager() {
                 </DropdownMenu>
               </div>
 
-              {tag.description && <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">{tag.description}</p>}
+              {tag.description && (
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+                  {tag.description}
+                </p>
+              )}
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Category</span>
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Category
+                  </span>
                   <Badge variant="outline">{tag.category}</Badge>
                 </div>
 
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Usage</span>
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Usage
+                  </span>
                   <span className="font-medium">{tag.usageCount} times</span>
                 </div>
 
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-600 dark:text-slate-400">Created by</span>
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Created by
+                  </span>
                   <span className="font-medium">{tag.createdBy}</span>
                 </div>
 
@@ -483,12 +572,16 @@ export function TagManager() {
           <div className="mx-auto w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
             <Tag className="h-12 w-12 text-slate-400" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">No tags found</h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+            No tags found
+          </h3>
           <p className="text-slate-600 dark:text-slate-400">
-            {searchQuery ? "Try adjusting your search or filters" : "Create your first tag to get started"}
+            {searchQuery
+              ? "Try adjusting your search or filters"
+              : "Create your first tag to get started"}
           </p>
         </div>
       )}
     </div>
-  )
+  );
 }

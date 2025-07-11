@@ -1,30 +1,39 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Repeat, Clock, AlertCircle } from "lucide-react"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Repeat, Clock, AlertCircle } from "lucide-react";
 
 interface RecurringTaskFormProps {
-  onRecurrenceChange: (recurrence: RecurrenceConfig | null) => void
-  initialRecurrence?: RecurrenceConfig | null
+  onRecurrenceChange: (recurrence: RecurrenceConfig | null) => void;
+  initialRecurrence?: RecurrenceConfig | null;
 }
 
 export interface RecurrenceConfig {
-  enabled: boolean
-  type: "daily" | "weekly" | "sprint"
-  interval: number
-  endType: "never" | "after" | "on"
-  endValue?: number | string
-  weekdays?: number[] // For weekly recurrence
+  enabled: boolean;
+  type: "daily" | "weekly" | "sprint";
+  interval: number;
+  endType: "never" | "after" | "on";
+  endValue?: number | string;
+  weekdays?: number[]; // For weekly recurrence
 }
 
-export function RecurringTaskForm({ onRecurrenceChange, initialRecurrence }: RecurringTaskFormProps) {
+export function RecurringTaskForm({
+  onRecurrenceChange,
+  initialRecurrence,
+}: RecurringTaskFormProps) {
   const [recurrence, setRecurrence] = useState<RecurrenceConfig>(
     initialRecurrence || {
       enabled: false,
@@ -32,47 +41,63 @@ export function RecurringTaskForm({ onRecurrenceChange, initialRecurrence }: Rec
       interval: 1,
       endType: "never",
     },
-  )
+  );
 
   const updateRecurrence = (updates: Partial<RecurrenceConfig>) => {
-    const newRecurrence = { ...recurrence, ...updates }
-    setRecurrence(newRecurrence)
-    onRecurrenceChange(newRecurrence.enabled ? newRecurrence : null)
-  }
+    const newRecurrence = { ...recurrence, ...updates };
+    setRecurrence(newRecurrence);
+    onRecurrenceChange(newRecurrence.enabled ? newRecurrence : null);
+  };
 
   const getRecurrencePreview = () => {
-    if (!recurrence.enabled) return null
+    if (!recurrence.enabled) return null;
 
-    let preview = ""
+    let preview = "";
 
     switch (recurrence.type) {
       case "daily":
-        preview = recurrence.interval === 1 ? "Every day" : `Every ${recurrence.interval} days`
-        break
+        preview =
+          recurrence.interval === 1
+            ? "Every day"
+            : `Every ${recurrence.interval} days`;
+        break;
       case "weekly":
-        const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+        const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         if (recurrence.weekdays && recurrence.weekdays.length > 0) {
-          const days = recurrence.weekdays.map((d) => weekdayNames[d]).join(", ")
-          preview = `Every ${recurrence.interval === 1 ? "" : `${recurrence.interval} `}week${recurrence.interval > 1 ? "s" : ""} on ${days}`
+          const days = recurrence.weekdays
+            .map((d) => weekdayNames[d])
+            .join(", ");
+          preview = `Every ${recurrence.interval === 1 ? "" : `${recurrence.interval} `}week${recurrence.interval > 1 ? "s" : ""} on ${days}`;
         } else {
-          preview = `Every ${recurrence.interval === 1 ? "" : `${recurrence.interval} `}week${recurrence.interval > 1 ? "s" : ""}`
+          preview = `Every ${recurrence.interval === 1 ? "" : `${recurrence.interval} `}week${recurrence.interval > 1 ? "s" : ""}`;
         }
-        break
+        break;
       case "sprint":
-        preview = recurrence.interval === 1 ? "Every sprint" : `Every ${recurrence.interval} sprints`
-        break
+        preview =
+          recurrence.interval === 1
+            ? "Every sprint"
+            : `Every ${recurrence.interval} sprints`;
+        break;
     }
 
     if (recurrence.endType === "after" && recurrence.endValue) {
-      preview += ` for ${recurrence.endValue} occurrence${recurrence.endValue > 1 ? "s" : ""}`
+      preview += ` for ${recurrence.endValue} occurrence${recurrence.endValue > 1 ? "s" : ""}`;
     } else if (recurrence.endType === "on" && recurrence.endValue) {
-      preview += ` until ${recurrence.endValue}`
+      preview += ` until ${recurrence.endValue}`;
     }
 
-    return preview
-  }
+    return preview;
+  };
 
-  const weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  const weekdayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
   return (
     <Card>
@@ -102,12 +127,18 @@ export function RecurringTaskForm({ onRecurrenceChange, initialRecurrence }: Rec
                     type="number"
                     min="1"
                     value={recurrence.interval}
-                    onChange={(e) => updateRecurrence({ interval: Number.parseInt(e.target.value) || 1 })}
+                    onChange={(e) =>
+                      updateRecurrence({
+                        interval: Number.parseInt(e.target.value) || 1,
+                      })
+                    }
                     className="w-20"
                   />
                   <Select
                     value={recurrence.type}
-                    onValueChange={(type: "daily" | "weekly" | "sprint") => updateRecurrence({ type })}
+                    onValueChange={(type: "daily" | "weekly" | "sprint") =>
+                      updateRecurrence({ type })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -125,7 +156,9 @@ export function RecurringTaskForm({ onRecurrenceChange, initialRecurrence }: Rec
                 <Label>Ends</Label>
                 <Select
                   value={recurrence.endType}
-                  onValueChange={(endType: "never" | "after" | "on") => updateRecurrence({ endType })}
+                  onValueChange={(endType: "never" | "after" | "on") =>
+                    updateRecurrence({ endType })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -146,14 +179,18 @@ export function RecurringTaskForm({ onRecurrenceChange, initialRecurrence }: Rec
                   {weekdayNames.map((day, index) => (
                     <Button
                       key={day}
-                      variant={recurrence.weekdays?.includes(index) ? "default" : "outline"}
+                      variant={
+                        recurrence.weekdays?.includes(index)
+                          ? "default"
+                          : "outline"
+                      }
                       size="sm"
                       onClick={() => {
-                        const current = recurrence.weekdays || []
+                        const current = recurrence.weekdays || [];
                         const updated = current.includes(index)
                           ? current.filter((d) => d !== index)
-                          : [...current, index].sort()
-                        updateRecurrence({ weekdays: updated })
+                          : [...current, index].sort();
+                        updateRecurrence({ weekdays: updated });
                       }}
                     >
                       {day.slice(0, 3)}
@@ -170,7 +207,11 @@ export function RecurringTaskForm({ onRecurrenceChange, initialRecurrence }: Rec
                   type="number"
                   min="1"
                   value={recurrence.endValue || ""}
-                  onChange={(e) => updateRecurrence({ endValue: Number.parseInt(e.target.value) || undefined })}
+                  onChange={(e) =>
+                    updateRecurrence({
+                      endValue: Number.parseInt(e.target.value) || undefined,
+                    })
+                  }
                   placeholder="Enter number"
                 />
               </div>
@@ -182,7 +223,9 @@ export function RecurringTaskForm({ onRecurrenceChange, initialRecurrence }: Rec
                 <Input
                   type="date"
                   value={recurrence.endValue || ""}
-                  onChange={(e) => updateRecurrence({ endValue: e.target.value })}
+                  onChange={(e) =>
+                    updateRecurrence({ endValue: e.target.value })
+                  }
                 />
               </div>
             )}
@@ -191,10 +234,13 @@ export function RecurringTaskForm({ onRecurrenceChange, initialRecurrence }: Rec
             <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <Clock className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-                <span className="text-sm font-medium text-slate-900 dark:text-slate-100">Preview</span>
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  Preview
+                </span>
               </div>
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                {getRecurrencePreview() || "Configure recurrence settings above"}
+                {getRecurrencePreview() ||
+                  "Configure recurrence settings above"}
               </p>
             </div>
 
@@ -203,9 +249,12 @@ export function RecurringTaskForm({ onRecurrenceChange, initialRecurrence }: Rec
               <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
                 <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5" />
                 <div className="text-sm">
-                  <p className="font-medium text-amber-800 dark:text-amber-200">Sprint-based recurrence</p>
+                  <p className="font-medium text-amber-800 dark:text-amber-200">
+                    Sprint-based recurrence
+                  </p>
                   <p className="text-amber-700 dark:text-amber-300">
-                    New tasks will be created automatically when sprints start based on your project's sprint schedule.
+                    New tasks will be created automatically when sprints start
+                    based on your project's sprint schedule.
                   </p>
                 </div>
               </div>
@@ -214,30 +263,43 @@ export function RecurringTaskForm({ onRecurrenceChange, initialRecurrence }: Rec
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // Component to display recurrence info on task cards
-export function RecurrenceIndicator({ recurrence }: { recurrence: RecurrenceConfig }) {
-  if (!recurrence.enabled) return null
+export function RecurrenceIndicator({
+  recurrence,
+}: {
+  recurrence: RecurrenceConfig;
+}) {
+  if (!recurrence.enabled) return null;
 
   const getShortDescription = () => {
     switch (recurrence.type) {
       case "daily":
-        return recurrence.interval === 1 ? "Daily" : `Every ${recurrence.interval}d`
+        return recurrence.interval === 1
+          ? "Daily"
+          : `Every ${recurrence.interval}d`;
       case "weekly":
-        return recurrence.interval === 1 ? "Weekly" : `Every ${recurrence.interval}w`
+        return recurrence.interval === 1
+          ? "Weekly"
+          : `Every ${recurrence.interval}w`;
       case "sprint":
-        return recurrence.interval === 1 ? "Every sprint" : `Every ${recurrence.interval} sprints`
+        return recurrence.interval === 1
+          ? "Every sprint"
+          : `Every ${recurrence.interval} sprints`;
       default:
-        return "Recurring"
+        return "Recurring";
     }
-  }
+  };
 
   return (
-    <Badge variant="secondary" className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+    <Badge
+      variant="secondary"
+      className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+    >
       <Repeat className="h-3 w-3 mr-1" />
       {getShortDescription()}
     </Badge>
-  )
+  );
 }

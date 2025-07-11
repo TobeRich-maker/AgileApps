@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Calendar,
   ExternalLink,
@@ -14,7 +14,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Clock,
-} from "lucide-react"
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -23,21 +23,21 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
 interface CalendarIntegration {
-  id: string
-  name: string
-  type: "google" | "outlook" | "apple"
-  connected: boolean
-  lastSync: string
-  syncEnabled: boolean
+  id: string;
+  name: string;
+  type: "google" | "outlook" | "apple";
+  connected: boolean;
+  lastSync: string;
+  syncEnabled: boolean;
   syncSettings: {
-    sprints: boolean
-    deadlines: boolean
-    meetings: boolean
-    personalTasks: boolean
-  }
+    sprints: boolean;
+    deadlines: boolean;
+    meetings: boolean;
+    personalTasks: boolean;
+  };
 }
 
 // Mock calendar integrations
@@ -84,12 +84,14 @@ const mockIntegrations: CalendarIntegration[] = [
       personalTasks: false,
     },
   },
-]
+];
 
 export function CalendarSync() {
-  const [integrations, setIntegrations] = useState<CalendarIntegration[]>(mockIntegrations)
-  const [selectedIntegration, setSelectedIntegration] = useState<CalendarIntegration | null>(null)
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [integrations, setIntegrations] =
+    useState<CalendarIntegration[]>(mockIntegrations);
+  const [selectedIntegration, setSelectedIntegration] =
+    useState<CalendarIntegration | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const connectCalendar = (integrationId: string) => {
     // In a real app, this would initiate OAuth flow
@@ -104,8 +106,8 @@ export function CalendarSync() {
             }
           : integration,
       ),
-    )
-  }
+    );
+  };
 
   const disconnectCalendar = (integrationId: string) => {
     setIntegrations((prev) =>
@@ -125,18 +127,23 @@ export function CalendarSync() {
             }
           : integration,
       ),
-    )
-  }
+    );
+  };
 
   const toggleSync = (integrationId: string) => {
     setIntegrations((prev) =>
       prev.map((integration) =>
-        integration.id === integrationId ? { ...integration, syncEnabled: !integration.syncEnabled } : integration,
+        integration.id === integrationId
+          ? { ...integration, syncEnabled: !integration.syncEnabled }
+          : integration,
       ),
-    )
-  }
+    );
+  };
 
-  const updateSyncSettings = (integrationId: string, settings: Partial<CalendarIntegration["syncSettings"]>) => {
+  const updateSyncSettings = (
+    integrationId: string,
+    settings: Partial<CalendarIntegration["syncSettings"]>,
+  ) => {
     setIntegrations((prev) =>
       prev.map((integration) =>
         integration.id === integrationId
@@ -147,57 +154,66 @@ export function CalendarSync() {
             }
           : integration,
       ),
-    )
-  }
+    );
+  };
 
   const syncNow = (integrationId: string) => {
     setIntegrations((prev) =>
       prev.map((integration) =>
-        integration.id === integrationId ? { ...integration, lastSync: new Date().toISOString() } : integration,
+        integration.id === integrationId
+          ? { ...integration, lastSync: new Date().toISOString() }
+          : integration,
       ),
-    )
-  }
+    );
+  };
 
   const getCalendarIcon = (type: CalendarIntegration["type"]) => {
     switch (type) {
       case "google":
-        return "🗓️"
+        return "🗓️";
       case "outlook":
-        return "📅"
+        return "📅";
       case "apple":
-        return "🍎"
+        return "🍎";
     }
-  }
+  };
 
   const getStatusColor = (integration: CalendarIntegration) => {
-    if (!integration.connected) return "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
-    if (!integration.syncEnabled) return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-    return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-  }
+    if (!integration.connected)
+      return "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200";
+    if (!integration.syncEnabled)
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+    return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+  };
 
   const getStatusText = (integration: CalendarIntegration) => {
-    if (!integration.connected) return "Not Connected"
-    if (!integration.syncEnabled) return "Connected (Sync Disabled)"
-    return "Connected & Syncing"
-  }
+    if (!integration.connected) return "Not Connected";
+    if (!integration.syncEnabled) return "Connected (Sync Disabled)";
+    return "Connected & Syncing";
+  };
 
   const formatLastSync = (lastSync: string) => {
-    if (!lastSync) return "Never"
-    const date = new Date(lastSync)
-    const now = new Date()
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
+    if (!lastSync) return "Never";
+    const date = new Date(lastSync);
+    const now = new Date();
+    const diffInMinutes = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60),
+    );
 
-    if (diffInMinutes < 1) return "Just now"
-    if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`
-    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} hours ago`
-    return date.toLocaleDateString()
-  }
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+    if (diffInMinutes < 1440)
+      return `${Math.floor(diffInMinutes / 60)} hours ago`;
+    return date.toLocaleDateString();
+  };
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h3 className="text-lg font-semibold text-navy-900 dark:text-navy-100 mb-2">Calendar Integration</h3>
+        <h3 className="text-lg font-semibold text-navy-900 dark:text-navy-100 mb-2">
+          Calendar Integration
+        </h3>
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Sync your SprintFlow events with external calendar applications
         </p>
@@ -210,8 +226,12 @@ export function CalendarSync() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">{getCalendarIcon(integration.type)}</span>
-                  <CardTitle className="text-base">{integration.name}</CardTitle>
+                  <span className="text-2xl">
+                    {getCalendarIcon(integration.type)}
+                  </span>
+                  <CardTitle className="text-base">
+                    {integration.name}
+                  </CardTitle>
                 </div>
                 <Badge className={getStatusColor(integration)}>
                   {integration.connected ? (
@@ -228,7 +248,10 @@ export function CalendarSync() {
               {integration.connected ? (
                 <>
                   <div className="flex items-center justify-between">
-                    <Label htmlFor={`sync-${integration.id}`} className="text-sm">
+                    <Label
+                      htmlFor={`sync-${integration.id}`}
+                      className="text-sm"
+                    >
                       Enable Sync
                     </Label>
                     <Switch
@@ -257,10 +280,13 @@ export function CalendarSync() {
                     </Button>
 
                     <Dialog
-                      open={isSettingsOpen && selectedIntegration?.id === integration.id}
+                      open={
+                        isSettingsOpen &&
+                        selectedIntegration?.id === integration.id
+                      }
                       onOpenChange={(open) => {
-                        setIsSettingsOpen(open)
-                        if (open) setSelectedIntegration(integration)
+                        setIsSettingsOpen(open);
+                        if (open) setSelectedIntegration(integration);
                       }}
                     >
                       <DialogTrigger asChild>
@@ -271,8 +297,12 @@ export function CalendarSync() {
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Sync Settings - {integration.name}</DialogTitle>
-                          <DialogDescription>Choose which events to sync with your calendar</DialogDescription>
+                          <DialogTitle>
+                            Sync Settings - {integration.name}
+                          </DialogTitle>
+                          <DialogDescription>
+                            Choose which events to sync with your calendar
+                          </DialogDescription>
                         </DialogHeader>
 
                         <div className="space-y-4">
@@ -281,7 +311,11 @@ export function CalendarSync() {
                             <Switch
                               id="sync-sprints"
                               checked={integration.syncSettings.sprints}
-                              onCheckedChange={(checked) => updateSyncSettings(integration.id, { sprints: checked })}
+                              onCheckedChange={(checked) =>
+                                updateSyncSettings(integration.id, {
+                                  sprints: checked,
+                                })
+                              }
                             />
                           </div>
 
@@ -290,7 +324,11 @@ export function CalendarSync() {
                             <Switch
                               id="sync-deadlines"
                               checked={integration.syncSettings.deadlines}
-                              onCheckedChange={(checked) => updateSyncSettings(integration.id, { deadlines: checked })}
+                              onCheckedChange={(checked) =>
+                                updateSyncSettings(integration.id, {
+                                  deadlines: checked,
+                                })
+                              }
                             />
                           </div>
 
@@ -299,24 +337,34 @@ export function CalendarSync() {
                             <Switch
                               id="sync-meetings"
                               checked={integration.syncSettings.meetings}
-                              onCheckedChange={(checked) => updateSyncSettings(integration.id, { meetings: checked })}
+                              onCheckedChange={(checked) =>
+                                updateSyncSettings(integration.id, {
+                                  meetings: checked,
+                                })
+                              }
                             />
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <Label htmlFor="sync-personal">Personal Tasks</Label>
+                            <Label htmlFor="sync-personal">
+                              Personal Tasks
+                            </Label>
                             <Switch
                               id="sync-personal"
                               checked={integration.syncSettings.personalTasks}
                               onCheckedChange={(checked) =>
-                                updateSyncSettings(integration.id, { personalTasks: checked })
+                                updateSyncSettings(integration.id, {
+                                  personalTasks: checked,
+                                })
                               }
                             />
                           </div>
                         </div>
 
                         <DialogFooter>
-                          <Button onClick={() => setIsSettingsOpen(false)}>Save Settings</Button>
+                          <Button onClick={() => setIsSettingsOpen(false)}>
+                            Save Settings
+                          </Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
@@ -364,32 +412,46 @@ export function CalendarSync() {
               <div className="text-2xl font-bold text-navy-900 dark:text-navy-100">
                 {integrations.filter((i) => i.connected).length}
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">Connected</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">
+                Connected
+              </div>
             </div>
 
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
                 {integrations.filter((i) => i.syncEnabled).length}
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">Syncing</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">
+                Syncing
+              </div>
             </div>
 
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">
-                {integrations.reduce((sum, i) => sum + Object.values(i.syncSettings).filter(Boolean).length, 0)}
+                {integrations.reduce(
+                  (sum, i) =>
+                    sum + Object.values(i.syncSettings).filter(Boolean).length,
+                  0,
+                )}
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">Event Types</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">
+                Event Types
+              </div>
             </div>
 
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600">
-                {integrations.filter((i) => i.lastSync).length > 0 ? "Active" : "Inactive"}
+                {integrations.filter((i) => i.lastSync).length > 0
+                  ? "Active"
+                  : "Inactive"}
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-400">Status</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">
+                Status
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

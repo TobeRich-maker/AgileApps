@@ -325,7 +325,7 @@ export function ChatPanel({ projectId, taskId, className }: ChatPanelProps) {
                 key={message.id}
                 className={cn(
                   "rounded-lg p-3",
-                  getMessageTypeStyles(message.type)
+                  getMessageTypeStyles(message.type),
                 )}
               >
                 {message.type === "system" ? (

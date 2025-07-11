@@ -1,34 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { useSprintStore, type Sprint } from "@/lib/stores/sprint-store";
+import { Plus } from "lucide-react";
 import { DraggableSprintList } from "@/components/sprints/draggable-sprint-list";
-import { useAuthStore } from "@/lib/stores/auth-store";
 
 export default function SprintsPage() {
   const { sprints, setSprints } = useSprintStore();
-  const { isAuthenticated, checkAuth } = useAuthStore();
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const router = useRouter();
 
-  // Cek autentikasi saat halaman dimuat
   useEffect(() => {
-    checkAuth().finally(() => setIsAuthChecked(true));
-  }, [checkAuth]);
-
-  // Redirect jika tidak login
-  useEffect(() => {
-    if (isAuthChecked && !isAuthenticated) {
-      router.push("/auth/login");
-    }
-  }, [isAuthChecked, isAuthenticated, router]);
-
-  // Load data sprint
-  useEffect(() => {
+    // Mock data - replace with actual API call
     const mockSprints: Sprint[] = [
       {
         id: "1",
@@ -73,22 +56,62 @@ export default function SprintsPage() {
     }
   }, [sprints.length, setSprints]);
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Active":
+        return "bg-green-100 text-green-800";
+      case "Completed":
+        return "bg-blue-100 text-blue-800";
+      case "Planned":
+        return "bg-yellow-100 text-yellow-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const getDaysRemaining = (endDate: string) => {
+    const end = new Date(endDate);
+    const now = new Date();
+    const diffTime = end.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
   const handleReorderSprints = async (reorderedSprints: Sprint[]) => {
     try {
+      // Update local state immediately for optimistic UI
       setSprints(reorderedSprints);
+
+      // In real app, send to API
+      // const updates = reorderedSprints.map((sprint, index) => ({
+      //   sprintId: sprint.id,
+      //   newOrder: index
+      // }))
+      // await sprintsApi.updateOrder(updates)
     } catch (error) {
       console.error("Failed to reorder sprints:", error);
+      // Revert on error
       setSprints(sprints);
     }
   };
 
   const handleEditSprint = (sprint: Sprint) => {
     console.log("Edit sprint:", sprint);
+    // Implement edit functionality
   };
 
   const handleDeleteSprint = async (sprintId: string) => {
     if (confirm("Are you sure you want to delete this sprint?")) {
       try {
+        // await sprintsApi.delete(sprintId)
         setSprints((prev) => prev.filter((s) => s.id !== sprintId));
       } catch (error) {
         console.error("Failed to delete sprint:", error);
@@ -98,10 +121,11 @@ export default function SprintsPage() {
 
   const handleStartSprint = async (sprintId: string) => {
     try {
+      // await sprintsApi.start(sprintId)
       setSprints((prev) =>
         prev.map((s) =>
-          s.id === sprintId ? { ...s, status: "Active" as const } : s
-        )
+          s.id === sprintId ? { ...s, status: "Active" as const } : s,
+        ),
       );
     } catch (error) {
       console.error("Failed to start sprint:", error);
@@ -110,18 +134,16 @@ export default function SprintsPage() {
 
   const handleCompleteSprint = async (sprintId: string) => {
     try {
+      // await sprintsApi.complete(sprintId)
       setSprints((prev) =>
         prev.map((s) =>
-          s.id === sprintId ? { ...s, status: "Completed" as const } : s
-        )
+          s.id === sprintId ? { ...s, status: "Completed" as const } : s,
+        ),
       );
     } catch (error) {
       console.error("Failed to complete sprint:", error);
     }
   };
-
-  // Jangan render apapun sebelum cek auth selesai
-  if (!isAuthChecked) return null;
 
   return (
     <MainLayout>

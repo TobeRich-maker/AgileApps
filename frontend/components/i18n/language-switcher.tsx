@@ -1,17 +1,22 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Globe } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Globe } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Language = {
-  code: string
-  name: string
-  flag: string
-}
+  code: string;
+  name: string;
+  flag: string;
+};
 
 const languages: Language[] = [
   { code: "en", name: "English", flag: "🇺🇸" },
@@ -22,7 +27,7 @@ const languages: Language[] = [
   { code: "ja", name: "日本語", flag: "🇯🇵" },
   { code: "ko", name: "한국어", flag: "🇰🇷" },
   { code: "zh", name: "中文", flag: "🇨🇳" },
-]
+];
 
 // Simple translations object (in a real app, this would be more comprehensive)
 const translations = {
@@ -88,31 +93,36 @@ const translations = {
     sort: "Ordenar",
   },
   // Add more languages as needed
-}
+};
 
 export function LanguageSwitcher() {
-  const [currentLanguage, setCurrentLanguage] = useState<string>("en")
-  const [mounted, setMounted] = useState(false)
+  const [currentLanguage, setCurrentLanguage] = useState<string>("en");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
+    setMounted(true);
     // Load saved language from localStorage
-    const savedLanguage = localStorage.getItem("sprintflow-language")
-    if (savedLanguage && languages.find((lang) => lang.code === savedLanguage)) {
-      setCurrentLanguage(savedLanguage)
+    const savedLanguage = localStorage.getItem("sprintflow-language");
+    if (
+      savedLanguage &&
+      languages.find((lang) => lang.code === savedLanguage)
+    ) {
+      setCurrentLanguage(savedLanguage);
     } else {
       // Detect browser language
-      const browserLanguage = navigator.language.split("-")[0]
-      const supportedLanguage = languages.find((lang) => lang.code === browserLanguage)
+      const browserLanguage = navigator.language.split("-")[0];
+      const supportedLanguage = languages.find(
+        (lang) => lang.code === browserLanguage,
+      );
       if (supportedLanguage) {
-        setCurrentLanguage(browserLanguage)
+        setCurrentLanguage(browserLanguage);
       }
     }
-  }, [])
+  }, []);
 
   const changeLanguage = (languageCode: string) => {
-    setCurrentLanguage(languageCode)
-    localStorage.setItem("sprintflow-language", languageCode)
+    setCurrentLanguage(languageCode);
+    localStorage.setItem("sprintflow-language", languageCode);
 
     // In a real app, you would trigger a language change event
     // or use a proper i18n library like next-intl
@@ -120,18 +130,19 @@ export function LanguageSwitcher() {
       new CustomEvent("languageChange", {
         detail: { language: languageCode },
       }),
-    )
-  }
+    );
+  };
 
   if (!mounted) {
     return (
       <Button variant="ghost" size="icon">
         <Globe className="h-4 w-4" />
       </Button>
-    )
+    );
   }
 
-  const currentLang = languages.find((lang) => lang.code === currentLanguage) || languages[0]
+  const currentLang =
+    languages.find((lang) => lang.code === currentLanguage) || languages[0];
 
   return (
     <DropdownMenu>
@@ -146,75 +157,94 @@ export function LanguageSwitcher() {
           <DropdownMenuItem
             key={language.code}
             onClick={() => changeLanguage(language.code)}
-            className={currentLanguage === language.code ? "bg-slate-100 dark:bg-slate-800" : ""}
+            className={
+              currentLanguage === language.code
+                ? "bg-slate-100 dark:bg-slate-800"
+                : ""
+            }
           >
             <span className="mr-2">{language.flag}</span>
             <span>{language.name}</span>
-            {currentLanguage === language.code && <span className="ml-auto text-xs text-slate-500">✓</span>}
+            {currentLanguage === language.code && (
+              <span className="ml-auto text-xs text-slate-500">✓</span>
+            )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
 
 // Hook to use translations
 export function useTranslations() {
-  const [currentLanguage, setCurrentLanguage] = useState<string>("en")
+  const [currentLanguage, setCurrentLanguage] = useState<string>("en");
 
   useEffect(() => {
-    const savedLanguage = localStorage.getItem("sprintflow-language") || "en"
-    setCurrentLanguage(savedLanguage)
+    const savedLanguage = localStorage.getItem("sprintflow-language") || "en";
+    setCurrentLanguage(savedLanguage);
 
     const handleLanguageChange = (event: CustomEvent) => {
-      setCurrentLanguage(event.detail.language)
-    }
+      setCurrentLanguage(event.detail.language);
+    };
 
-    window.addEventListener("languageChange", handleLanguageChange as EventListener)
+    window.addEventListener(
+      "languageChange",
+      handleLanguageChange as EventListener,
+    );
     return () => {
-      window.removeEventListener("languageChange", handleLanguageChange as EventListener)
-    }
-  }, [])
+      window.removeEventListener(
+        "languageChange",
+        handleLanguageChange as EventListener,
+      );
+    };
+  }, []);
 
   const t = (key: string): string => {
-    const langTranslations = translations[currentLanguage as keyof typeof translations] || translations.en
-    return langTranslations[key as keyof typeof langTranslations] || key
-  }
+    const langTranslations =
+      translations[currentLanguage as keyof typeof translations] ||
+      translations.en;
+    return langTranslations[key as keyof typeof langTranslations] || key;
+  };
 
-  return { t, currentLanguage }
+  return { t, currentLanguage };
 }
 
 // Context for translations (optional, for more complex apps)
-import { createContext, useContext } from "react"
+import { createContext, useContext } from "react";
 
 interface I18nContextType {
-  language: string
-  t: (key: string) => string
-  changeLanguage: (lang: string) => void
+  language: string;
+  t: (key: string) => string;
+  changeLanguage: (lang: string) => void;
 }
 
-const I18nContext = createContext<I18nContextType | undefined>(undefined)
+const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState("en")
+  const [language, setLanguage] = useState("en");
 
   const t = (key: string): string => {
-    const langTranslations = translations[language as keyof typeof translations] || translations.en
-    return langTranslations[key as keyof typeof langTranslations] || key
-  }
+    const langTranslations =
+      translations[language as keyof typeof translations] || translations.en;
+    return langTranslations[key as keyof typeof langTranslations] || key;
+  };
 
   const changeLanguage = (lang: string) => {
-    setLanguage(lang)
-    localStorage.setItem("sprintflow-language", lang)
-  }
+    setLanguage(lang);
+    localStorage.setItem("sprintflow-language", lang);
+  };
 
-  return <I18nContext.Provider value={{ language, t, changeLanguage }}>{children}</I18nContext.Provider>
+  return (
+    <I18nContext.Provider value={{ language, t, changeLanguage }}>
+      {children}
+    </I18nContext.Provider>
+  );
 }
 
 export function useI18n() {
-  const context = useContext(I18nContext)
+  const context = useContext(I18nContext);
   if (context === undefined) {
-    throw new Error("useI18n must be used within an I18nProvider")
+    throw new Error("useI18n must be used within an I18nProvider");
   }
-  return context
+  return context;
 }

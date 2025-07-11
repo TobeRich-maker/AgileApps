@@ -1,12 +1,15 @@
 {
   "name": "SprintFlow - Agile Project Management",
   "short_name": "SprintFlow",
-  "description": "Professional Agile project management platform for teams",
+  "description": "Professional Agile project management platform for teams. Manage sprints, track progress, and collaborate effectively.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#486581",
   "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["productivity", "business", "utilities"],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -57,26 +60,11 @@
       "purpose": "maskable any"
     }
   ],
-  "categories": ["productivity", "business"],
-  "screenshots": [
-    {
-      "src": "/screenshots/desktop-1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "/screenshots/mobile-1.png",
-      "sizes": "375x667",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ],
   "shortcuts": [
     {
       "name": "Dashboard",
       "short_name": "Dashboard",
-      "description": "View project dashboard",
+      "description": "View your project dashboard",
       "url": "/dashboard",
       "icons": [
         {
@@ -88,7 +76,7 @@
     {
       "name": "My Work",
       "short_name": "My Work",
-      "description": "View assigned tasks",
+      "description": "View your assigned tasks",
       "url": "/my-work",
       "icons": [
         {
@@ -100,7 +88,7 @@
     {
       "name": "Kanban Board",
       "short_name": "Kanban",
-      "description": "View kanban board",
+      "description": "Manage tasks on Kanban board",
       "url": "/kanban",
       "icons": [
         {
@@ -108,6 +96,54 @@
           "sizes": "96x96"
         }
       ]
+    },
+    {
+      "name": "Team Chat",
+      "short_name": "Chat",
+      "description": "Chat with your team",
+      "url": "/chat",
+      "icons": [
+        {
+          "src": "/icons/shortcut-chat.png",
+          "sizes": "96x96"
+        }
+      ]
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-dashboard.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard view on desktop"
+    },
+    {
+      "src": "/screenshots/mobile-dashboard.png",
+      "sizes": "375x667",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dashboard view on mobile"
+    },
+    {
+      "src": "/screenshots/desktop-kanban.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Kanban board on desktop"
+    },
+    {
+      "src": "/screenshots/mobile-kanban.png",
+      "sizes": "375x667",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Kanban board on mobile"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
