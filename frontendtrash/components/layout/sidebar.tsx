@@ -97,9 +97,11 @@ export function Sidebar() {
       <div className="p-4 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-navy-100 text-navy-700 dark:bg-navy-800 dark:text-navy-300">
-              {user?.name?.charAt(0).toUpperCase() || "U"}
-            </AvatarFallback>
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              alt="Avatar"
+              className="h-8 w-8 rounded-full"
+            />
           </Avatar>
           {!collapsed && (
             <div className="flex-1 min-w-0">

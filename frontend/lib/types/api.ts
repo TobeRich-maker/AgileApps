@@ -171,3 +171,40 @@ export interface Notification {
     projectId?: string;
   };
 }
+
+// Team Types
+// export interface Team {
+//   id: number;
+//   name: string;
+//   description?: string;
+//   is_active?: boolean;
+//   created_by: number;
+//   creator: {
+//     id: number;
+//     name: string;
+//   };
+//   members: {
+//     id: number;
+//     name: string;
+//   }[];
+// }
+export interface Team {
+  id: number;
+  name: string;
+  description?: string;
+  is_active?: boolean;
+  created_by: number;
+  creator?: { id: number; name: string };
+  members: { id: number; name: string }[];
+  projects?: {
+    id: number;
+    name: string;
+    sprints?: { id: number; name: string }[];
+  }[];
+}
+
+export interface CreateTeamRequest {
+  name: string;
+  description?: string;
+  member_ids?: number[];
+}

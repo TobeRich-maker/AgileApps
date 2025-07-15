@@ -36,16 +36,17 @@ class TeamController extends Controller
             'created_by' => $request->user()->id,
         ]);
 
-        // Add members
-        if ($request->has('member_ids')) {
-            $team->members()->attach($request->member_ids);
-        }
+        // Gabungkan member + creator, tanpa duplikat
+        $allMemberIds = collect($request->member_ids ?? [])
+            ->push($request->user()->id)
+            ->unique()
+            ->values();
 
-        // Add creator as member
-        $team->members()->attach($request->user()->id);
+        $team->members()->syncWithoutDetaching($allMemberIds);
 
         return response()->json($team->load(['creator', 'members']), 201);
     }
+
 
     public function show(Team $team)
     {

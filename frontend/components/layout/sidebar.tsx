@@ -29,6 +29,7 @@ import {
   Zap,
   Shield,
   Eye,
+  Users as Tim,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/lib/stores/auth-store";
@@ -45,6 +46,7 @@ const navigation = [
   { name: "Templates", href: "/templates", icon: FileTemplate },
   { name: "Tags", href: "/tags", icon: Tag },
   { name: "Activity", href: "/activity", icon: Activity },
+  { name: "Tim", href: "/tim", icon: Tim },
   { name: "Retrospective", href: "/retrospective", icon: Clock },
 ];
 
@@ -66,7 +68,7 @@ export function Sidebar() {
     <div
       className={cn(
         "fixed inset-y-0 left-0 z-50 flex flex-col bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 transition-all duration-300",
-        collapsed ? "w-16" : "w-64",
+        collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Header */}
@@ -123,7 +125,7 @@ export function Sidebar() {
           variant="ghost"
           className={cn(
             "w-full justify-start text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100",
-            collapsed ? "px-2" : "px-3",
+            collapsed ? "px-2" : "px-3"
           )}
         >
           <Search className="h-4 w-4" />
@@ -142,7 +144,7 @@ export function Sidebar() {
                     collapsed ? "px-2" : "px-3",
                     isActive
                       ? "bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100",
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
                   )}
                 >
                   <item.icon className="h-4 w-4" />
@@ -184,7 +186,7 @@ export function Sidebar() {
                       collapsed ? "px-2" : "px-3",
                       isActive
                         ? "bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100"
-                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100",
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
                     )}
                   >
                     <item.icon className="h-4 w-4" />
@@ -213,7 +215,7 @@ export function Sidebar() {
           variant="ghost"
           className={cn(
             "w-full justify-start text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400",
-            collapsed ? "px-2" : "px-3",
+            collapsed ? "px-2" : "px-3"
           )}
           showConfirmDialog={true}
         />

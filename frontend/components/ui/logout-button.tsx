@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { LogOut } from "lucide-react";
+import { LogOut, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -33,11 +33,9 @@ export function LogoutButton({
   const handleLogout = async () => {
     setIsLoading(true);
     try {
-      // Call the logout function which handles all storage clearing
       logout();
     } catch (error) {
       console.error("Logout error:", error);
-      // Force redirect even if there's an error
       window.location.href = "/login";
     } finally {
       setIsLoading(false);
@@ -47,11 +45,12 @@ export function LogoutButton({
   const LogoutButtonContent = (
     <Button
       {...props}
-      className={cn("", className)}
+      className={cn("gap-2", className)}
       onClick={showConfirmDialog ? undefined : handleLogout}
       disabled={isLoading}
+      variant="outline"
     >
-      <LogOut className="h-4 w-4 mr-2" />
+      <LogOut className="h-4 w-4" />
       {children || (isLoading ? "Signing out..." : "Sign Out")}
     </Button>
   );
@@ -63,20 +62,25 @@ export function LogoutButton({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{LogoutButtonContent}</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            Are you sure you want to sign out?
+      <AlertDialogContent className="sm:max-w-md animate-in fade-in slide-in-from-top-6 duration-300">
+        <AlertDialogHeader className="text-center">
+          <div className="flex justify-center mb-2">
+            <AlertTriangle className="text-red-500 h-8 w-8" />
+          </div>
+          <AlertDialogTitle className=" flex justify-center text-lg font-semibold text-red-600">
+            Are you sure you want to log out?
           </AlertDialogTitle>
-          <AlertDialogDescription>
-            You will be logged out of your account and redirected to the login
-            page. All local data will be cleared.
-          </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleLogout} disabled={isLoading}>
-            {isLoading ? "Signing out..." : "Sign Out"}
+        <AlertDialogFooter className="mt-4">
+          <AlertDialogCancel className="w-full sm:w-auto">
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleLogout}
+            disabled={isLoading}
+            className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white"
+          >
+            {isLoading ? "Signing out..." : "Yes, Sign Out"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

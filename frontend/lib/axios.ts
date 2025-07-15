@@ -1,5 +1,3 @@
-// file: lib/axios.ts
-
 import axios from "axios";
 import { useAuthStore } from "@/lib/stores/auth-store";
 

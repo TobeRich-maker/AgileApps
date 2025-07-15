@@ -55,7 +55,7 @@ export default function ProjectsPage() {
     try {
       const payload = {
         ...projectData,
-        status: projectData.status.toLowerCase().replace(" ", "_"), // ✅ fix di sini
+        status: projectData.status.toLowerCase().replace(" ", "_"),
       };
 
       const response = await api.post("/projects", payload);

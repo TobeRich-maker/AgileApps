@@ -9,6 +9,11 @@ use App\Http\Controllers\Api\SprintController;
 use App\Http\Controllers\Api\StandupController;
 use App\Http\Controllers\Api\BugController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\UserController;
+
+
+
+//Usercontroller routes
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -16,6 +21,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/users', [UserController::class, 'index']);
     // Auth routes
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
